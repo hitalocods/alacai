@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AL Açaí — Monte seu Açaí Perfeito</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+
+    <!-- Header -->
+    <header id="site-header">
+        <div class="wrap nav">
+            <div class="brand-group">
+                <img src="logo.jpeg" alt="AL Açaí" class="logo-img">
+                <a href="admin.html" class="btn-admin-trigger" title="Painel Admin">
+                    ⚙️ Admin
+                </a>
+            </div>
+            <div class="nav-actions">
+                <a class="btn btn-solid" href="#pedido">Montar Açaí</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="wrap">
+            <div>
+                <div class="eyebrow">Açaí artesanal batido na hora</div>
+                <h1>Todo açaí<br>merece ser <span>seu</span>.</h1>
+                <p class="script-font tagline">Monte seu açaí ✧</p>
+                <p class="lead">Escolha o tamanho, coberturas, frutas e adicionais — os primeiros 7 adicionais já estão inclusos no preço sem surpresas!</p>
+                <div class="hero-actions">
+                    <a href="#pedido" class="btn btn-solid">Monte Seu Copo</a>
+                    <a href="#cardapio" class="btn btn-outline">Ver Tamanhos e Preços</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Marquee Banner -->
+    <div class="marquee" aria-hidden="true">
+        <div class="marquee-track">
+            <span>AÇAÍ PURO</span><span>MORANGO FRESCO</span><span>NUTELLA</span><span>PAÇOCA</span><span>LEITE CONDENSADO</span><span>GRANULADO</span><span>ENTREGA GRÁTIS</span>
+            <span>AÇAÍ PURO</span><span>MORANGO FRESCO</span><span>NUTELLA</span><span>PAÇOCA</span><span>LEITE CONDENSADO</span><span>GRANULADO</span><span>ENTREGA GRÁTIS</span>
+        </div>
+    </div>
+
+    <!-- Cardápio e Preços -->
+    <section class="cardapio" id="cardapio">
+        <div class="wrap">
+            <div class="section-head">
+                <div class="eyebrow">Tamanhos & Valores</div>
+                <h2>Nossos Copos</h2>
+                <p>Preço fechado, sem surpresa — adicionais só geram acréscimo se você passar de 7!</p>
+            </div>
+
+            <div class="menu-grid" id="menu-grid">
+                <!-- Rendered dynamically from storeAPI in app.js -->
+            </div>
+
+            <div class="rules-card">
+                <div class="flag">★</div>
+                <p>Todo pedido tem direito a</p>
+                <div class="big">7 Adicionais Grátis</div>
+                <p>já inclusas frutas, coberturas e completamentos. Se ultrapassar 7, será cobrado apenas <span class="extra">R$ 1,00</span> por cada adicional extra.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Visual Builder Section -->
+    <section class="builder-section" id="pedido">
+        <div class="wrap">
+            <div class="section-head">
+                <div class="eyebrow">Monte o Seu</div>
+                <h2>Seu Açaí Ao Vivo</h2>
+                <p>Escolha o tamanho e vá adicionando os ingredientes — veja o copo ser montado em tempo real.</p>
+            </div>
+
+            <div class="builder">
+                <!-- Options Panel -->
+                <div>
+                    <!-- Size Options -->
+                    <div class="group">
+                        <h3>1. Escolha o Tamanho</h3>
+                        <div class="chip-row" id="size-options">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Coberturas -->
+                    <div class="group">
+                        <h3>2. Coberturas</h3>
+                        <div class="topping-grid" id="coberturas-container">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Frutas -->
+                    <div class="group">
+                        <h3>3. Frutas Frescas</h3>
+                        <div class="topping-grid" id="frutas-container">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Completamentos -->
+                    <div class="group">
+                        <h3>4. Completamentos <span class="count" id="comp-count">0 selecionados</span></h3>
+                        <div class="topping-grid" id="completamentos-container">
+                            <!-- Rendered dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Observação -->
+                    <div class="group">
+                        <h3>5. Observações do Pedido</h3>
+                        <textarea id="obs" placeholder="Ex: pouco doce, caprichar na paçoca..."></textarea>
+                    </div>
+
+                    <!-- Bairro de Entrega -->
+                    <div class="group">
+                        <h3>6. Bairro de Entrega</h3>
+                        <select id="bairro" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--purple-900); color: var(--cream);">
+                            <option value="">Selecione seu bairro</option>
+                        </select>
+                        <p style="font-size: 12px; color: var(--cream-muted); margin-top: 8px;">Taxa de entrega será calculada automaticamente</p>
+                    </div>
+
+                    <!-- Endereço Completo -->
+                    <div class="group">
+                        <h3>7. Endereço Completo</h3>
+                        <textarea id="endereco" placeholder="Rua, número, complemento, ponto de referência..." style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--purple-900); color: var(--cream); min-height: 80px;"></textarea>
+                    </div>
+
+                    <!-- Forma de Pagamento -->
+                    <div class="group">
+                        <h3>8. Forma de Pagamento</h3>
+                        <select id="pagamento" class="form-control" style="width: 100%; padding: 12px; border-radius: 8px; border: 1px solid var(--glass-border); background: var(--purple-900); color: var(--cream);">
+                            <option value="">Selecione a forma de pagamento</option>
+                            <option value="Pix">Pix</option>
+                            <option value="Cartão de Crédito">Cartão de Crédito</option>
+                            <option value="Cartão de Débito">Cartão de Débito</option>
+                            <option value="Dinheiro">Dinheiro</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Live Bowl Panel -->
+                <div class="bowl-panel">
+                    <div class="bowl-stage">
+                        <svg viewBox="0 0 240 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Prévia do copo de açaí">
+                            <ellipse cx="120" cy="196" rx="72" ry="10" fill="#19082B" opacity="0.4" />
+                            <path d="M38 96 C38 156 78 184 120 184 C162 184 202 156 202 96 Z" fill="#331154" />
+                            <path d="M48 96 C48 148 82 172 120 172 C158 172 192 148 192 96 Z" fill="#58218B" />
+                            <ellipse cx="120" cy="94" rx="82" ry="34" fill="#7832B6" />
+                            <ellipse cx="120" cy="90" rx="74" ry="28" fill="#9B51E0" />
+
+                            <!-- Dynamic Sprinkles -->
+                            <g class="sprinkle" data-slot="0"><circle cx="86" cy="80" r="5" fill="#FFB800" /></g>
+                            <g class="sprinkle" data-slot="1"><circle cx="106" cy="70" r="5" fill="#FF3366" /></g>
+                            <g class="sprinkle" data-slot="2"><circle cx="130" cy="66" r="5" fill="#C9986B" /></g>
+                            <g class="sprinkle" data-slot="3"><circle cx="152" cy="72" r="5" fill="#FFF9EF" /></g>
+                            <g class="sprinkle" data-slot="4"><circle cx="96" cy="90" r="5" fill="#6B3FA0" /></g>
+                            <g class="sprinkle" data-slot="5"><circle cx="120" cy="60" r="5" fill="#C68A4E" /></g>
+                            <g class="sprinkle" data-slot="6"><circle cx="144" cy="88" r="5" fill="#4A2A16" /></g>
+                            <g class="sprinkle" data-slot="7"><circle cx="164" cy="82" r="5" fill="#8FBF3F" /></g>
+
+                            <rect x="176" y="36" width="8" height="58" rx="4" fill="#EADBC8" transform="rotate(18 180 65)" />
+                        </svg>
+                    </div>
+
+                    <div class="free-meter" id="free-meter">
+                        <strong id="free-count">0</strong> de 7 adicionais grátis usados
+                    </div>
+
+                    <ul class="summary-list" id="summary-list"></ul>
+
+                    <div class="total-row">
+                        <span>Total</span>
+                        <span id="total-price">R$ 0,00</span>
+                    </div>
+
+                    <button class="whats-btn" id="send-order">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.572-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
+                        Pedir no WhatsApp
+                    </button>
+                    <p class="hint-error" id="hint">Selecione um tamanho antes de enviar o pedido.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Mobile Floating Checkout Bar -->
+    <div class="mobile-checkout-bar" id="mobile-checkout-bar">
+        <div class="mobile-checkout-inner">
+            <div class="mobile-checkout-info">
+                <div class="total-label">Total do Pedido</div>
+                <div class="total-val" id="mobile-total-val">R$ 0,00</div>
+            </div>
+            <button class="mobile-checkout-btn" id="mobile-send-order">
+                <span>Enviar Pedido</span> ➔
+            </button>
+        </div>
+    </div>
+
+    <!-- Info Strip -->
+    <section class="info-strip">
+        <div class="wrap">
+            <div class="info-grid">
+                <div class="info-item">
+                    <div class="ico">🕒</div>
+                    <h4>Horário de Funcionamento</h4>
+                    <p>Das <span class="accent">15h às 22h</span><br>Segunda a Sábado</p>
+                </div>
+                <div class="info-item">
+                    <div class="ico">🛵</div>
+                    <h4>Entrega Grátis</h4>
+                    <p>Pedido preparado na hora e entregue no seu endereço</p>
+                </div>
+                <div class="info-item">
+                    <div class="ico">💳</div>
+                    <h4>Formas de Pagamento</h4>
+                    <p>Aceitamos Pix e Cartões<br><em>(Exceto Credishop)</em></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="wrap">
+            <img src="logo.jpeg" alt="AL Açaí" class="logo-img footer-logo">
+            <div class="socials">
+                <a href="https://instagram.com/al.acai0705" target="_blank" rel="noopener">📸 Instagram · @al.acai0705</a>
+                <a href="https://wa.me/5586999128202" target="_blank" rel="noopener">💬 WhatsApp · 86 99912-8202</a>
+            </div>
+            <p class="foot-note">AL Açaí — Pedidos direto pelo WhatsApp sem cadastro ou complicação.</p>
+        </div>
+    </footer>
+
+    <!-- JS Scripts -->
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

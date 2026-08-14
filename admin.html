@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AL Açaí - Painel Admin</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=Caveat:wght@600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <!-- Admin Modal -->
+    <div class="admin-modal-overlay active" id="admin-modal-overlay">
+        <div class="admin-modal">
+            <div class="admin-header">
+                <h2>⚙️ Painel de Controle Admin — AL Açaí</h2>
+                <a href="index.html" class="admin-close-btn">← Voltar ao Site</a>
+            </div>
+
+            <!-- Tab Navigation -->
+            <div class="admin-tabs">
+                <button class="admin-tab active" data-tab="tab-dashboard">📊 Dashboard</button>
+                <button class="admin-tab" data-tab="tab-prices">🏷️ Preços & Tamanhos</button>
+                <button class="admin-tab" data-tab="tab-promos">🎁 Promoções & Descontos</button>
+                <button class="admin-tab" data-tab="tab-photos">🖼️ Fotos & Imagens</button>
+                <button class="admin-tab" data-tab="tab-toppings">🍧 Adicionais</button>
+                <button class="admin-tab" data-tab="tab-delivery">🛵 Bairros & Taxas</button>
+            </div>
+
+            <!-- Mobile Menu Toggle -->
+            <button class="admin-menu-toggle" id="admin-menu-toggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <div class="admin-body">
+                <!-- TAB 1: Dashboard -->
+                <div class="admin-tab-content active" id="tab-dashboard">
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">💰</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Lucro Hoje</div>
+                                <div class="stat-value" id="stat-daily">R$ 0,00</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Lucro Semana</div>
+                                <div class="stat-value" id="stat-weekly">R$ 0,00</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📊</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Lucro Mês</div>
+                                <div class="stat-value" id="stat-monthly">R$ 0,00</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">📉</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Despesas Mês</div>
+                                <div class="stat-value" id="stat-expenses">R$ 0,00</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-sections">
+                        <div class="dashboard-section">
+                            <h3>📝 Registrar Pedido</h3>
+                            <form class="crud-form" id="form-order">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Valor Total (R$)</label>
+                                        <input type="number" step="0.01" id="order-value" class="form-control" placeholder="20.00" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Tamanho</label>
+                                        <select id="order-size" class="form-control">
+                                            <option value="300 ml">300 ml</option>
+                                            <option value="400 ml">400 ml</option>
+                                            <option value="500 ml">500 ml</option>
+                                            <option value="770 ml">770 ml</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-solid btn-sm">Registrar Pedido</button>
+                            </form>
+                        </div>
+
+                        <div class="dashboard-section">
+                            <h3>💸 Registrar Despesa</h3>
+                            <form class="crud-form" id="form-expense">
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label>Descrição</label>
+                                        <input type="text" id="expense-desc" class="form-control" placeholder="Ex: Compra de insumos" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Valor (R$)</label>
+                                        <input type="number" step="0.01" id="expense-value" class="form-control" placeholder="50.00" required>
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-solid btn-sm">Registrar Despesa</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-tables">
+                        <div class="dashboard-table-section">
+                            <h3>📦 Últimos Pedidos</h3>
+                            <table class="crud-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Tamanho</th>
+                                        <th>Valor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-orders-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="dashboard-table-section">
+                            <h3>💸 Últimas Despesas</h3>
+                            <table class="crud-table">
+                                <thead>
+                                    <tr>
+                                        <th>Data</th>
+                                        <th>Descrição</th>
+                                        <th>Valor</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-expenses-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Preços & Tamanhos -->
+                <div class="admin-tab-content" id="tab-prices">
+                    <form class="crud-form" id="form-price">
+                        <input type="hidden" id="price-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Tamanho (ex: 500 ml)</label>
+                                <input type="text" id="price-size" class="form-control" placeholder="500 ml" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Preço Padrão (R$)</label>
+                                <input type="number" step="0.5" id="price-val" class="form-control" placeholder="20.00" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Preço Promocional (opcional)</label>
+                                <input type="number" step="0.5" id="price-promo" class="form-control" placeholder="16.90">
+                            </div>
+                            <div class="form-group">
+                                <label>Badge (opcional)</label>
+                                <input type="text" id="price-badge" class="form-control" placeholder="Mais Pedido">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="price-popular"> Marcar como popular
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-solid btn-sm">Salvar Tamanho</button>
+                    </form>
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Tamanho</th>
+                                <th>Preço Padrão</th>
+                                <th>Preço Promo</th>
+                                <th>Badge</th>
+                                <th>Popular</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-prices-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 3: Promoções -->
+                <div class="admin-tab-content" id="tab-promos">
+                    <form class="crud-form" id="form-promo">
+                        <input type="hidden" id="promo-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Título da Promoção</label>
+                                <input type="text" id="promo-title" class="form-control" placeholder="Super Promoção 500ml" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Descrição</label>
+                                <input type="text" id="promo-desc" class="form-control" placeholder="Leve o copo de 500ml..." required>
+                            </div>
+                            <div class="form-group">
+                                <label>Desconto (texto)</label>
+                                <input type="text" id="promo-discount" class="form-control" placeholder="15% OFF" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Badge</label>
+                                <input type="text" id="promo-badge" class="form-control" placeholder="OFERTA DO DIA" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Tamanho Alvo</label>
+                                <select id="promo-target" class="form-control" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="300 ml">300 ml</option>
+                                    <option value="400 ml">400 ml</option>
+                                    <option value="500 ml">500 ml</option>
+                                    <option value="770 ml">770 ml</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="promo-active"> Promoção ativa
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-solid btn-sm">Salvar Promoção</button>
+                    </form>
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Título</th>
+                                <th>Descrição</th>
+                                <th>Desconto</th>
+                                <th>Badge</th>
+                                <th>Ativa</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-promos-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 4: Fotos -->
+                <div class="admin-tab-content" id="tab-photos">
+                    <form class="crud-form" id="form-photos">
+                        <div class="form-group">
+                            <label>URL da Foto Hero (copo principal)</label>
+                            <input type="url" id="photo-hero" class="form-control" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>URL da Logo</label>
+                            <input type="url" id="photo-logo" class="form-control" placeholder="https://...">
+                        </div>
+                        <div class="form-group">
+                            <label>URL do Banner de Promoção</label>
+                            <input type="url" id="photo-banner" class="form-control" placeholder="https://...">
+                        </div>
+                        <button type="submit" class="btn btn-solid btn-sm">Atualizar Imagens</button>
+                    </form>
+                </div>
+
+                <!-- TAB 5: Adicionais -->
+                <div class="admin-tab-content" id="tab-toppings">
+                    <div style="margin-bottom: 20px;">
+                        <label style="font-weight: 700; color: var(--cream-muted); margin-bottom: 8px; display: block;">Selecione a Categoria:</label>
+                        <select id="topping-category-select" class="form-control" style="width: 100%; max-width: 300px;">
+                            <option value="coberturas">Coberturas</option>
+                            <option value="frutas">Frutas</option>
+                            <option value="completamentos">Completamentos</option>
+                        </select>
+                    </div>
+                    <form class="crud-form" id="form-topping">
+                        <input type="hidden" id="topping-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nome do Adicional</label>
+                                <input type="text" id="topping-name" class="form-control" placeholder="Ex: Nutella" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Cor (hex)</label>
+                                <input type="color" id="topping-color" class="form-control" value="#6B3B1F" style="height: 42px;">
+                            </div>
+                            <div class="form-group">
+                                <label>Ícone/Emoji</label>
+                                <input type="text" id="topping-icon" class="form-control" placeholder="🍫" maxlength="2">
+                            </div>
+                        </div>
+                        <div class="form-group" style="margin-bottom: 14px;">
+                            <label style="display: flex; align-items: center; gap: 8px;">
+                                <input type="checkbox" id="topping-new"> Marcar como Novo
+                            </label>
+                        </div>
+                        <button type="submit" class="btn btn-solid btn-sm">Salvar Adicional</button>
+                    </form>
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Nome</th>
+                                <th>Cor</th>
+                                <th>Ícone</th>
+                                <th>Novo</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-toppings-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- TAB 6: Bairros & Taxas -->
+                <div class="admin-tab-content" id="tab-delivery">
+                    <form class="crud-form" id="form-delivery">
+                        <input type="hidden" id="delivery-id">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Nome do Bairro</label>
+                                <input type="text" id="delivery-name" class="form-control" placeholder="Ex: Centro" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Taxa de Entrega (R$)</label>
+                                <input type="number" step="0.5" id="delivery-fee" class="form-control" placeholder="5.00" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-solid btn-sm">Salvar Bairro</button>
+                    </form>
+                    <table class="crud-table">
+                        <thead>
+                            <tr>
+                                <th>Bairro</th>
+                                <th>Taxa (R$)</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-delivery-body">
+                            <!-- Populated dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="admin-footer">
+                <div style="font-size: 13px; color: var(--cream-muted);">
+                    Dados salvos automaticamente
+                </div>
+                <button class="btn btn-sm btn-danger" id="admin-reset-data">Restaurar Dados Padrão</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div class="admin-toast" id="admin-toast">Alterações salvas!</div>
+
+    <!-- Scripts -->
+    <script src="api.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

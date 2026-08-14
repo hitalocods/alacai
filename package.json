@@ -1,0 +1,14 @@
+{
+  "name": "al-acai",
+  "version": "2.0.0",
+  "description": "AL Açaí - Sistema Completo com Builder Interativo, Promoções e CRUD Admin",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "cors": "^2.8.5"
+  }
+}
