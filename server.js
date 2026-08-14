@@ -102,7 +102,12 @@ async function readData() {
             if (res.rows.length > 0) {
                 const dbValue = res.rows[0].value;
                 // Mescla as variáveis do banco com as do arquivo local para garantir novas propriedades (como o estoque e novas fotos)
-                const mergedPhotos = { ...(localData ? localData.photos : {}), ...(dbValue.photos || {}) };
+                const mergedPhotos = {};
+                const localPhotos = localData ? localData.photos : {};
+                const dbPhotos = dbValue.photos || {};
+                for (const key in localPhotos) {
+                    mergedPhotos[key] = dbPhotos[key] ? dbPhotos[key] : localPhotos[key];
+                }
                 return { 
                     ...localData, 
                     ...dbValue, 

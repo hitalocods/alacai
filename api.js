@@ -36,10 +36,10 @@ const DEFAULT_DATA = {
         heroCup: "",
         logo: "",
         promoBanner: "",
-        cup300: "",
-        cup400: "",
-        cup500: "",
-        cup770: ""
+        cup300: "acai.jpg",
+        cup400: "acai.jpg",
+        cup500: "acai.jpg",
+        cup770: "acai.jpg"
     },
     freeLimit: 7,
     extraPrice: 1.00,
@@ -115,8 +115,25 @@ class StoreAPI {
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
-                const parsed = JSON.parse(stored);
-                return { ...DEFAULT_DATA, ...parsed, inventory: parsed.inventory || DEFAULT_DATA.inventory };
+                let needsSave = false;
+                const mergedPhotos = {};
+                for (const key in DEFAULT_DATA.photos) {
+                    if (parsed.photos && parsed.photos[key]) {
+                        mergedPhotos[key] = parsed.photos[key];
+                    } else {
+                        mergedPhotos[key] = DEFAULT_DATA.photos[key];
+                        needsSave = true;
+                    }
+                }
+                const mergedData = { ...DEFAULT_DATA, ...parsed, photos: mergedPhotos, inventory: parsed.inventory || DEFAULT_DATA.inventory };
+                if (needsSave) {
+                    try {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedData));
+                    } catch (e) {
+                        console.error('Erro ao salvar no localStorage:', e);
+                    }
+                }
+                return mergedData;
             }
         } catch (e) {
             console.warn('Erro ao carregar localStorage, usando dados padrão:', e);
@@ -142,7 +159,11 @@ class StoreAPI {
             if (res.ok) {
                 const remoteData = await res.json();
                 if (remoteData && remoteData.sizes) {
-                    this.data = { ...DEFAULT_DATA, ...remoteData, inventory: remoteData.inventory || DEFAULT_DATA.inventory };
+                    const mergedPhotos = {};
+                    for (const key in DEFAULT_DATA.photos) {
+                        mergedPhotos[key] = (remoteData.photos && remoteData.photos[key]) ? remoteData.photos[key] : DEFAULT_DATA.photos[key];
+                    }
+                    this.data = { ...DEFAULT_DATA, ...remoteData, photos: mergedPhotos, inventory: remoteData.inventory || DEFAULT_DATA.inventory };
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
                     this.notify();
                 }
