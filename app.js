@@ -80,12 +80,18 @@ function renderCoposGrid(sizes, photos) {
         return `
             <div class="copo-card" onclick="openCustomizer('${s.size}')">
                 ${s.badge ? `<div class="badge-card">${s.badge}</div>` : ''}
-                <div class="copo-img-wrapper">
-                    ${imgHtml}
+                <div class="copo-card-top">
+                    <div class="copo-img-wrapper">
+                        ${imgHtml}
+                    </div>
+                    <div class="copo-details">
+                        <h3>Açaí ${s.size}</h3>
+                        <div class="price">R$ ${currentPrice.toFixed(2).replace('.', ',')}</div>
+                    </div>
                 </div>
-                <h3>Açaí ${s.size}</h3>
-                <div class="price">R$ ${currentPrice.toFixed(2).replace('.', ',')}</div>
-                <button class="btn-select">Escolher Adicionais</button>
+                <div class="copo-card-bottom">
+                    <button class="btn-select">Escolher Adicionais</button>
+                </div>
             </div>
         `;
     }).join('');

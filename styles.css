@@ -1226,7 +1226,7 @@ footer .foot-note {
 
 .copos-grid {
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: 24px;
     margin: 40px 0;
 }
@@ -1236,12 +1236,10 @@ footer .foot-note {
     border: 1.5px solid var(--glass-border);
     border-radius: var(--radius-xl);
     padding: 24px;
-    text-align: center;
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
     display: flex;
     flex-direction: column;
-    align-items: center;
     position: relative;
     overflow: hidden;
 }
@@ -1260,10 +1258,17 @@ footer .foot-note {
     pointer-events: none;
 }
 
-.copo-img-wrapper {
-    width: 140px;
-    height: 140px;
+.copo-card-top {
+    display: flex;
+    align-items: center;
+    gap: 20px;
     margin-bottom: 20px;
+    text-align: left;
+}
+
+.copo-img-wrapper {
+    width: 100px;
+    height: 100px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1273,6 +1278,7 @@ footer .foot-note {
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+    flex-shrink: 0;
 }
 
 .copo-card:hover .copo-img-wrapper {
@@ -1292,19 +1298,27 @@ footer .foot-note {
     transform: scale(1.08);
 }
 
+.copo-details {
+    flex: 1;
+}
+
 .copo-card h3 {
     font-family: var(--font-heading);
-    font-size: 22px;
+    font-size: 20px;
     font-weight: 800;
     color: #fff;
-    margin: 10px 0 6px;
+    margin: 0 0 6px;
 }
 
 .copo-card .price {
     font-size: 18px;
     font-weight: 800;
     color: var(--lime);
-    margin-bottom: 16px;
+    margin-bottom: 0;
+}
+
+.copo-card-bottom {
+    width: 100%;
 }
 
 .copo-card .btn-select {
@@ -1466,6 +1480,11 @@ footer .foot-note {
 }
 
 @media (max-width: 768px) {
+    .copos-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
     .modal-container {
         width: 100%;
         height: 100%;
