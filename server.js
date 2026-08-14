@@ -257,3 +257,5 @@ app.listen(PORT, () => {
     console.log(`🚀 Servidor AL Açaí rodando na porta ${PORT}`);
     console.log(`📍 Acesse: http://localhost:${PORT}`);
 });
+
+module.exports = app;
