@@ -55,13 +55,7 @@ function renderCoposGrid(sizes, photos) {
         const hasPromo = s.promoPrice !== null && s.promoPrice !== undefined && s.promoPrice < s.price;
         const currentPrice = hasPromo ? s.promoPrice : s.price;
 
-        let cupPhotoKey = '';
-        if (s.id === 'size-300') cupPhotoKey = 'cup300';
-        else if (s.id === 'size-400') cupPhotoKey = 'cup400';
-        else if (s.id === 'size-500') cupPhotoKey = 'cup500';
-        else if (s.id === 'size-770') cupPhotoKey = 'cup770';
-
-        const photoUrl = (photos && photos[cupPhotoKey]) ? photos[cupPhotoKey] : '';
+        const photoUrl = s.photo || '';
         
         let imgHtml = '';
         if (photoUrl) {

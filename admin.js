@@ -40,7 +40,6 @@ function initAdminPanel() {
     initPhotosForm();
     initToppingsForm();
     initDeliveryForm();
-    initMobileMenu();
 
     // Toppings Filter Select Listener
     const toppingFilterSelect = document.getElementById('topping-category-select');
@@ -200,12 +199,23 @@ function renderDashboard(data) {
     const weeklyProfit = orders.filter(o => new Date(o.date) >= weekAgo).reduce((sum, o) => sum + o.value, 0);
     const monthlyProfit = orders.filter(o => new Date(o.date) >= monthStart).reduce((sum, o) => sum + o.value, 0);
     const monthlyExpensesTotal = expenses.filter(e => new Date(e.date) >= monthStart).reduce((sum, e) => sum + e.value, 0);
+    const netProfit = monthlyProfit - monthlyExpensesTotal;
 
     // Dom updates
     if (document.getElementById('stat-daily')) document.getElementById('stat-daily').textContent = `R$ ${dailyProfit.toFixed(2).replace('.', ',')}`;
     if (document.getElementById('stat-weekly')) document.getElementById('stat-weekly').textContent = `R$ ${weeklyProfit.toFixed(2).replace('.', ',')}`;
     if (document.getElementById('stat-monthly')) document.getElementById('stat-monthly').textContent = `R$ ${monthlyProfit.toFixed(2).replace('.', ',')}`;
     if (document.getElementById('stat-expenses')) document.getElementById('stat-expenses').textContent = `R$ ${monthlyExpensesTotal.toFixed(2).replace('.', ',')}`;
+    
+    const netProfitEl = document.getElementById('stat-net-profit');
+    if (netProfitEl) {
+        netProfitEl.textContent = `R$ ${netProfit.toFixed(2).replace('.', ',')}`;
+        if (netProfit < 0) {
+            netProfitEl.style.color = 'var(--status-out)';
+        } else {
+            netProfitEl.style.color = 'var(--lime)';
+        }
+    }
 
     // Render tables
     const ordersBody = document.getElementById('table-orders-body');
@@ -236,6 +246,48 @@ function renderDashboard(data) {
                 </tr>
             `;
         }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma despesa este mês</td></tr>';
+    }
+
+    // Render Consolidated Cash Flow
+    const cashflowBody = document.getElementById('table-cashflow-body');
+    if (cashflowBody) {
+        const cashFlowList = [
+            ...orders.map(o => ({
+                id: o.id,
+                date: new Date(o.date),
+                type: 'entry',
+                desc: `Venda - Copo ${o.size}`,
+                value: o.value
+            })),
+            ...expenses.map(e => ({
+                id: e.id,
+                date: new Date(e.date),
+                type: 'expense',
+                desc: `Despesa - ${e.description}`,
+                value: e.value
+            }))
+        ];
+
+        // Sort by date descending
+        cashFlowList.sort((a, b) => b.date - a.date);
+
+        cashflowBody.innerHTML = cashFlowList.slice(0, 15).map(item => {
+            const dateStr = item.date.toLocaleDateString('pt-BR') + ' ' + item.date.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'});
+            const typeBadge = item.type === 'entry' 
+                ? `<span class="badge-cashflow entry">Receita</span>`
+                : `<span class="badge-cashflow expense">Despesa</span>`;
+            const valClass = item.type === 'entry' ? 'cashflow-entry' : 'cashflow-expense';
+            const prefix = item.type === 'entry' ? '+' : '-';
+
+            return `
+                <tr>
+                    <td>${dateStr}</td>
+                    <td>${typeBadge}</td>
+                    <td><strong>${item.desc}</strong></td>
+                    <td class="${valClass}">${prefix} R$ ${item.value.toFixed(2).replace('.', ',')}</td>
+                </tr>
+            `;
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma movimentação registrada</td></tr>';
     }
 }
 
@@ -407,6 +459,7 @@ function initPriceForm() {
         const promoPriceVal = document.getElementById('price-promo-val').value;
         const promoPrice = promoPriceVal ? parseFloat(promoPriceVal) : null;
         const badge = document.getElementById('price-badge').value.trim();
+        const photo = document.getElementById('price-photo').value.trim() || 'acai.jpg';
 
         if (!size || isNaN(price)) {
             alert('Preencha o tamanho e o preço corretamente!');
@@ -419,7 +472,8 @@ function initPriceForm() {
             price,
             promoPrice,
             popular: !!badge,
-            badge: badge || undefined
+            badge: badge || undefined,
+            photo
         });
 
         form.reset();
@@ -434,7 +488,10 @@ function renderPriceTable(sizes) {
     if (!tbody) return;
     tbody.innerHTML = sizes.map(s => `
         <tr>
-            <td><strong>${s.size}</strong> ${s.badge ? `<span class="badge-pill">${s.badge}</span>` : ''}</td>
+            <td>
+                <img src="${s.photo || 'acai.jpg'}" style="width:32px; height:32px; object-fit:contain; border-radius:4px; margin-right:8px; vertical-align:middle; background:rgba(255,255,255,0.02); border:1px solid var(--border-subtle);">
+                <strong>${s.size}</strong> ${s.badge ? `<span class="badge-pill">${s.badge}</span>` : ''}
+            </td>
             <td>R$ ${s.price.toFixed(2)}</td>
             <td>${s.promoPrice ? `R$ ${s.promoPrice.toFixed(2)}` : '-'}</td>
             <td>
@@ -457,6 +514,7 @@ window.editPrice = function(id) {
     document.getElementById('price-val').value = sizeObj.price;
     document.getElementById('price-promo-val').value = sizeObj.promoPrice || '';
     document.getElementById('price-badge').value = sizeObj.badge || '';
+    document.getElementById('price-photo').value = sizeObj.photo || '';
     showToast(`Editando ${sizeObj.size}`);
 };
 
@@ -715,22 +773,3 @@ window.deleteDelivery = function(id) {
     }
 };
 
-function initMobileMenu() {
-    const menuToggle = document.getElementById('admin-menu-toggle');
-    const tabs = document.querySelector('.admin-tabs');
-
-    if (menuToggle && tabs) {
-        menuToggle.addEventListener('click', () => {
-            menuToggle.classList.toggle('active');
-            tabs.classList.toggle('open');
-        });
-
-        // Close menu when clicking a tab
-        tabs.querySelectorAll('.admin-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                menuToggle.classList.remove('active');
-                tabs.classList.remove('open');
-            });
-        });
-    }
-}

@@ -7,10 +7,10 @@ const STORAGE_KEY = 'al_acai_store_v2';
 
 const DEFAULT_DATA = {
     sizes: [
-        { id: "size-300", size: "300 ml", price: 14, promoPrice: null, popular: false },
-        { id: "size-400", size: "400 ml", price: 17, promoPrice: null, popular: false },
-        { id: "size-500", size: "500 ml", price: 20, promoPrice: 16.90, popular: true, badge: "Mais Pedido · 15% OFF" },
-        { id: "size-770", size: "770 ml", price: 27, promoPrice: null, popular: false }
+        { id: "size-300", size: "300 ml", price: 14, promoPrice: null, popular: false, photo: "acai.jpg" },
+        { id: "size-400", size: "400 ml", price: 17, promoPrice: null, popular: false, photo: "acai.jpg" },
+        { id: "size-500", size: "500 ml", price: 20, promoPrice: 16.90, popular: true, badge: "Mais Pedido · 15% OFF", photo: "acai.jpg" },
+        { id: "size-770", size: "770 ml", price: 27, promoPrice: null, popular: false, photo: "acai.jpg" }
     ],
     promotions: [
         {
@@ -34,12 +34,8 @@ const DEFAULT_DATA = {
     ],
     photos: {
         heroCup: "",
-        logo: "",
-        promoBanner: "",
-        cup300: "acai.jpg",
-        cup400: "acai.jpg",
-        cup500: "acai.jpg",
-        cup770: "acai.jpg"
+        logo: "logo.jpeg",
+        promoBanner: ""
     },
     freeLimit: 7,
     extraPrice: 1.00,

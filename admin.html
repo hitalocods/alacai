@@ -27,19 +27,11 @@
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="tab-dashboard">📊 Dashboard</button>
                 <button class="admin-tab" data-tab="tab-inventory">📦 Estoque</button>
-                <button class="admin-tab" data-tab="tab-prices">🏷️ Preços & Tamanhos</button>
+                <button class="admin-tab" data-tab="tab-prices">🏷️ Preços & Configurações</button>
                 <button class="admin-tab" data-tab="tab-promos">🎁 Promoções & Descontos</button>
-                <button class="admin-tab" data-tab="tab-photos">🖼️ Fotos & Imagens</button>
                 <button class="admin-tab" data-tab="tab-toppings">🍧 Adicionais</button>
                 <button class="admin-tab" data-tab="tab-delivery">🛵 Bairros & Taxas</button>
             </div>
-
-            <!-- Mobile Menu Toggle -->
-            <button class="admin-menu-toggle" id="admin-menu-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
 
             <div class="admin-body">
                 <!-- TAB 1: Dashboard -->
@@ -48,21 +40,21 @@
                         <div class="stat-card">
                             <div class="stat-icon">💰</div>
                             <div class="stat-info">
-                                <div class="stat-label">Lucro Hoje</div>
+                                <div class="stat-label">Faturamento Hoje</div>
                                 <div class="stat-value" id="stat-daily">R$ 0,00</div>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon">📈</div>
                             <div class="stat-info">
-                                <div class="stat-label">Lucro Semana</div>
+                                <div class="stat-label">Faturamento Semana</div>
                                 <div class="stat-value" id="stat-weekly">R$ 0,00</div>
                             </div>
                         </div>
                         <div class="stat-card">
                             <div class="stat-icon">📊</div>
                             <div class="stat-info">
-                                <div class="stat-label">Lucro Mês</div>
+                                <div class="stat-label">Faturamento Mês</div>
                                 <div class="stat-value" id="stat-monthly">R$ 0,00</div>
                             </div>
                         </div>
@@ -71,6 +63,13 @@
                             <div class="stat-info">
                                 <div class="stat-label">Despesas Mês</div>
                                 <div class="stat-value" id="stat-expenses">R$ 0,00</div>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-icon">💸</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Lucro Líquido Mês</div>
+                                <div class="stat-value" id="stat-net-profit" style="color: var(--lime); font-weight: 800;">R$ 0,00</div>
                             </div>
                         </div>
                     </div>
@@ -156,6 +155,27 @@
                                         </tr>
                                     </thead>
                                     <tbody id="table-expenses-body">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-tables" style="grid-template-columns: 1fr; margin-top: 24px;">
+                        <div class="dashboard-table-section" style="width: 100%;">
+                            <h3>🔄 Extrato Unificado de Fluxo de Caixa (Últimos 15 lançamentos)</h3>
+                            <div style="overflow-x: auto;">
+                                <table class="crud-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Tipo</th>
+                                            <th>Descrição</th>
+                                            <th>Valor</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-cashflow-body">
                                         <!-- Populated dynamically -->
                                     </tbody>
                                 </table>
@@ -287,9 +307,35 @@
                                     <label>Badge (opcional)</label>
                                     <input type="text" id="price-badge" class="form-control" placeholder="Ex: Mais Pedido">
                                 </div>
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label>URL da Foto do Copo (ex: acai.jpg)</label>
+                                    <input type="url" id="price-photo" class="form-control" placeholder="acai.jpg ou https://...">
+                                </div>
                                 <button type="submit" class="btn btn-solid btn-sm" style="width: 100%; margin-top: 10px;">Salvar Tamanho</button>
                             </form>
                         </div>
+                    </div>
+
+                    <!-- Configurações de Identidade Visual e Banners -->
+                    <div class="dashboard-section" style="margin-top: 24px;">
+                        <h3>🎨 Identidade Visual & Banners da Loja</h3>
+                        <form class="crud-form" id="form-photos" style="background: none; border: none; padding: 0; margin: 0;">
+                            <div class="form-grid" style="margin-bottom: 12px;">
+                                <div class="form-group">
+                                    <label>URL da Foto Hero (copo principal da home)</label>
+                                    <input type="url" id="photo-hero" class="form-control" placeholder="https://...">
+                                </div>
+                                <div class="form-group">
+                                    <label>URL da Logo</label>
+                                    <input type="url" id="photo-logo" class="form-control" placeholder="logo.jpeg ou https://...">
+                                </div>
+                            </div>
+                            <div class="form-group" style="margin-bottom: 18px;">
+                                <label>URL do Banner de Promoção</label>
+                                <input type="url" id="photo-banner" class="form-control" placeholder="https://...">
+                            </div>
+                            <button type="submit" class="btn btn-solid btn-sm">Atualizar Design & Banners</button>
+                        </form>
                     </div>
                 </div>
 
@@ -345,46 +391,6 @@
                     </table>
                 </div>
 
-                <!-- TAB 5: Fotos -->
-                <div class="admin-tab-content" id="tab-photos">
-                    <form class="crud-form" id="form-photos">
-                        <div class="form-grid" style="margin-bottom: 12px;">
-                            <div class="form-group">
-                                <label>URL da Foto Hero (copo principal)</label>
-                                <input type="url" id="photo-hero" class="form-control" placeholder="https://...">
-                            </div>
-                            <div class="form-group">
-                                <label>URL da Logo</label>
-                                <input type="url" id="photo-logo" class="form-control" placeholder="https://...">
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <label>URL do Banner de Promoção</label>
-                            <input type="url" id="photo-banner" class="form-control" placeholder="https://...">
-                        </div>
-                        
-                        <h4 style="margin: 18px 0 10px; color: var(--lime); font-size: 14px;">Fotos dos Copos Reais</h4>
-                        <div class="form-grid" style="margin-bottom: 18px;">
-                            <div class="form-group">
-                                <label>Foto Copo 300 ml</label>
-                                <input type="url" id="photo-cup300" class="form-control" placeholder="https://...">
-                            </div>
-                            <div class="form-group">
-                                <label>Foto Copo 400 ml</label>
-                                <input type="url" id="photo-cup400" class="form-control" placeholder="https://...">
-                            </div>
-                            <div class="form-group">
-                                <label>Foto Copo 500 ml</label>
-                                <input type="url" id="photo-cup500" class="form-control" placeholder="https://...">
-                            </div>
-                            <div class="form-group">
-                                <label>Foto Copo 770 ml</label>
-                                <input type="url" id="photo-cup770" class="form-control" placeholder="https://...">
-                            </div>
-                        </div>
-                        <button type="submit" class="btn btn-solid btn-sm">Atualizar Imagens</button>
-                    </form>
-                </div>
 
                 <!-- TAB 6: Adicionais -->
                 <div class="admin-tab-content" id="tab-toppings">
