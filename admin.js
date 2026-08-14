@@ -550,8 +550,12 @@ function initPhotosForm() {
         const heroCup = document.getElementById('photo-hero').value.trim();
         const logo = document.getElementById('photo-logo').value.trim();
         const promoBanner = document.getElementById('photo-banner').value.trim();
+        const cup300 = document.getElementById('photo-cup300').value.trim();
+        const cup400 = document.getElementById('photo-cup400').value.trim();
+        const cup500 = document.getElementById('photo-cup500').value.trim();
+        const cup770 = document.getElementById('photo-cup770').value.trim();
 
-        window.storeAPI.updatePhotos({ heroCup, logo, promoBanner });
+        window.storeAPI.updatePhotos({ heroCup, logo, promoBanner, cup300, cup400, cup500, cup770 });
         showToast('Imagens atualizadas!');
     });
 }
@@ -561,6 +565,10 @@ function renderPhotosFormValues(photos) {
     if (document.getElementById('photo-hero')) document.getElementById('photo-hero').value = photos.heroCup || '';
     if (document.getElementById('photo-logo')) document.getElementById('photo-logo').value = photos.logo || '';
     if (document.getElementById('photo-banner')) document.getElementById('photo-banner').value = photos.promoBanner || '';
+    if (document.getElementById('photo-cup300')) document.getElementById('photo-cup300').value = photos.cup300 || '';
+    if (document.getElementById('photo-cup400')) document.getElementById('photo-cup400').value = photos.cup400 || '';
+    if (document.getElementById('photo-cup500')) document.getElementById('photo-cup500').value = photos.cup500 || '';
+    if (document.getElementById('photo-cup770')) document.getElementById('photo-cup770').value = photos.cup770 || '';
 }
 
 /* --- TAB 6: ADICIONAIS & INGREDIENTES --- */

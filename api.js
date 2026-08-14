@@ -35,7 +35,11 @@ const DEFAULT_DATA = {
     photos: {
         heroCup: "",
         logo: "",
-        promoBanner: ""
+        promoBanner: "",
+        cup300: "",
+        cup400: "",
+        cup500: "",
+        cup770: ""
     },
     freeLimit: 7,
     extraPrice: 1.00,

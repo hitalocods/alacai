@@ -285,58 +285,58 @@
   "inventory": [
     {
       "id": "inv-size-300",
-      "name": "Copo 300 ml (unidades)",
       "qty": 150,
-      "minQty": 20,
+      "name": "Copo 300 ml (unidades)",
       "unit": "unidades",
+      "minQty": 20,
       "linkedItem": "size-300"
     },
     {
       "id": "inv-size-400",
-      "name": "Copo 400 ml (unidades)",
       "qty": 120,
-      "minQty": 20,
+      "name": "Copo 400 ml (unidades)",
       "unit": "unidades",
+      "minQty": 20,
       "linkedItem": "size-400"
     },
     {
       "id": "inv-size-500",
-      "name": "Copo 500 ml (unidades)",
       "qty": 200,
-      "minQty": 30,
+      "name": "Copo 500 ml (unidades)",
       "unit": "unidades",
+      "minQty": 30,
       "linkedItem": "size-500"
     },
     {
       "id": "inv-size-770",
-      "name": "Copo 770 ml (unidades)",
       "qty": 80,
-      "minQty": 15,
+      "name": "Copo 770 ml (unidades)",
       "unit": "unidades",
+      "minQty": 15,
       "linkedItem": "size-770"
     },
     {
       "id": "inv-nutella",
-      "name": "Nutella (Potes)",
       "qty": 12,
-      "minQty": 3,
+      "name": "Nutella (Potes)",
       "unit": "potes",
+      "minQty": 3,
       "linkedItem": "comp-3"
     },
     {
       "id": "inv-leite-po",
-      "name": "Leite em pó (kg)",
       "qty": 10,
-      "minQty": 2,
+      "name": "Leite em pó (kg)",
       "unit": "kg",
+      "minQty": 2,
       "linkedItem": "comp-7"
     },
     {
       "id": "inv-morango",
-      "name": "Morango (Bandejas)",
       "qty": 25,
-      "minQty": 5,
+      "name": "Morango (Bandejas)",
       "unit": "bandejas",
+      "minQty": 5,
       "linkedItem": "fru-1"
     }
   ]

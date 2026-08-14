@@ -348,17 +348,39 @@
                 <!-- TAB 5: Fotos -->
                 <div class="admin-tab-content" id="tab-photos">
                     <form class="crud-form" id="form-photos">
-                        <div class="form-group" style="margin-bottom: 12px;">
-                            <label>URL da Foto Hero (copo principal)</label>
-                            <input type="url" id="photo-hero" class="form-control" placeholder="https://...">
+                        <div class="form-grid" style="margin-bottom: 12px;">
+                            <div class="form-group">
+                                <label>URL da Foto Hero (copo principal)</label>
+                                <input type="url" id="photo-hero" class="form-control" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>URL da Logo</label>
+                                <input type="url" id="photo-logo" class="form-control" placeholder="https://...">
+                            </div>
                         </div>
                         <div class="form-group" style="margin-bottom: 12px;">
-                            <label>URL da Logo</label>
-                            <input type="url" id="photo-logo" class="form-control" placeholder="https://...">
-                        </div>
-                        <div class="form-group" style="margin-bottom: 18px;">
                             <label>URL do Banner de Promoção</label>
                             <input type="url" id="photo-banner" class="form-control" placeholder="https://...">
+                        </div>
+                        
+                        <h4 style="margin: 18px 0 10px; color: var(--lime); font-size: 14px;">Fotos dos Copos Reais</h4>
+                        <div class="form-grid" style="margin-bottom: 18px;">
+                            <div class="form-group">
+                                <label>Foto Copo 300 ml</label>
+                                <input type="url" id="photo-cup300" class="form-control" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Copo 400 ml</label>
+                                <input type="url" id="photo-cup400" class="form-control" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Copo 500 ml</label>
+                                <input type="url" id="photo-cup500" class="form-control" placeholder="https://...">
+                            </div>
+                            <div class="form-group">
+                                <label>Foto Copo 770 ml</label>
+                                <input type="url" id="photo-cup770" class="form-control" placeholder="https://...">
+                            </div>
                         </div>
                         <button type="submit" class="btn btn-solid btn-sm">Atualizar Imagens</button>
                     </form>

@@ -3,6 +3,7 @@
  */
 
 const WHATSAPP_NUMBER = "5586999128202";
+let currentSelectedSize = '';
 
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
@@ -17,6 +18,19 @@ function initApp() {
         }
     });
 
+    // Close modal listener
+    const closeBtn = document.getElementById('close-modal-btn');
+    if (closeBtn) {
+        closeBtn.addEventListener('click', closeCustomizer);
+    }
+
+    const modalOverlay = document.getElementById('customizer-modal');
+    if (modalOverlay) {
+        modalOverlay.addEventListener('click', (e) => {
+            if (e.target === modalOverlay) closeCustomizer();
+        });
+    }
+
     // Subscribe to store API changes
     window.storeAPI.subscribe((data) => {
         renderUI(data);
@@ -27,141 +41,97 @@ function initApp() {
 }
 
 function renderUI(data) {
-    renderMenuGrid(data.sizes);
-    renderBuilderOptions(data.sizes, data.toppings);
+    renderCoposGrid(data.sizes, data.photos);
+    renderBuilderOptions(data.toppings);
     renderDeliveryOptions(data.deliveryLocations);
     updateOrderSummary();
 }
 
-function renderHeroPhoto(photos) {
-    const heroArtContainer = document.getElementById('hero-art-container');
-    if (!heroArtContainer) return;
+function renderCoposGrid(sizes, photos) {
+    const coposGrid = document.getElementById('copos-grid');
+    if (!coposGrid || !sizes) return;
 
-    if (photos && photos.heroCup) {
-        heroArtContainer.innerHTML = `
-            <img src="${photos.heroCup}" alt="Açaí AL Açaí" class="hero-img-custom float-cup">
-        `;
-    } else {
-        heroArtContainer.innerHTML = `
-            <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <g class="spin-slow" opacity="0.45">
-                    <circle cx="200" cy="200" r="188" fill="none" stroke="#9B51E0" stroke-width="1.5" stroke-dasharray="3 12" />
-                </g>
-                <g class="float-cup">
-                    <ellipse cx="200" cy="335" rx="120" ry="16" fill="#19082B" opacity="0.5" />
-                    <path d="M64 190 C64 280 130 322 200 322 C270 322 336 280 336 190 Z" fill="#42166B" />
-                    <path d="M78 190 C78 268 138 308 200 308 C262 308 322 268 322 190 Z" fill="#58218B" />
-                    <ellipse cx="200" cy="188" rx="132" ry="54" fill="#7832B6" />
-                    <ellipse cx="200" cy="182" rx="120" ry="46" fill="#9B51E0" />
-                    <circle cx="150" cy="168" r="9" fill="#FFB800" />
-                    <circle cx="178" cy="150" r="7" fill="#FFB800" />
-                    <circle cx="212" cy="160" r="9" fill="#FF3366" />
-                    <circle cx="246" cy="176" r="7" fill="#FF3366" />
-                    <circle cx="200" cy="140" r="6" fill="#FFF9EF" />
-                    <path d="M120 156 Q200 118 280 156" stroke="#FFF9EF" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.9" />
-                    <rect x="272" y="90" width="12" height="92" rx="6" fill="#EADBC8" transform="rotate(20 278 136)" />
-                </g>
-            </svg>
-        `;
-    }
-}
-
-function renderPromotions(promotions) {
-    const promoContainer = document.getElementById('promo-grid-container');
-    const promoSection = document.getElementById('promotions-section');
-    if (!promoContainer || !promoSection) return;
-
-    const activePromos = promotions ? promotions.filter(p => p.active) : [];
-    if (activePromos.length === 0) {
-        promoSection.style.display = 'none';
-        return;
-    }
-
-    promoSection.style.display = 'block';
-    promoContainer.innerHTML = activePromos.map(p => `
-        <div class="promo-card">
-            <div class="promo-top">
-                <span class="badge badge-berry">${p.badge || 'OFERTA'}</span>
-                <span style="color: var(--lime); font-weight: 800; font-size: 15px;">${p.discount}</span>
-            </div>
-            <h3>${p.title}</h3>
-            <p>${p.description}</p>
-            <button class="btn-promo-select" onclick="selectPromoTarget('${p.targetSize}')">
-                Quero Aproveitar ➔
-            </button>
-        </div>
-    `).join('');
-}
-
-window.selectPromoTarget = function(targetSize) {
-    const sizeRadio = document.querySelector(`input[name="tamanho"][value="${targetSize}"]`);
-    if (sizeRadio) {
-        sizeRadio.checked = true;
-        updateOrderSummary();
-    }
-    const builderSection = document.getElementById('pedido');
-    if (builderSection) {
-        builderSection.scrollIntoView({ behavior: 'smooth' });
-    }
-};
-
-function renderMenuGrid(sizes) {
-    const menuGrid = document.getElementById('menu-grid');
-    if (!menuGrid || !sizes) return;
-
-    menuGrid.innerHTML = sizes.map(s => {
+    coposGrid.innerHTML = sizes.map(s => {
         const hasPromo = s.promoPrice !== null && s.promoPrice !== undefined && s.promoPrice < s.price;
         const currentPrice = hasPromo ? s.promoPrice : s.price;
 
+        let cupPhotoKey = '';
+        if (s.id === 'size-300') cupPhotoKey = 'cup300';
+        else if (s.id === 'size-400') cupPhotoKey = 'cup400';
+        else if (s.id === 'size-500') cupPhotoKey = 'cup500';
+        else if (s.id === 'size-770') cupPhotoKey = 'cup770';
+
+        const photoUrl = (photos && photos[cupPhotoKey]) ? photos[cupPhotoKey] : '';
+        
+        let imgHtml = '';
+        if (photoUrl) {
+            imgHtml = `<img src="${photoUrl}" alt="Açaí ${s.size}" class="copo-img">`;
+        } else {
+            // Elegant SVG representation
+            imgHtml = `
+                <svg viewBox="0 0 100 120" class="copo-img" fill="none" stroke="var(--lime)" stroke-width="2" style="width: 100px; height: 100px;">
+                    <path d="M18 15 L82 15 L72 105 L28 105 Z" fill="#58218B" stroke="var(--lime)" stroke-width="2" />
+                    <ellipse cx="50" cy="15" rx="32" ry="8" fill="#7832B6" stroke="var(--lime)" stroke-width="1.5" />
+                    <ellipse cx="50" cy="13" rx="26" ry="6" fill="#FF3366" />
+                </svg>
+            `;
+        }
+
         return `
-            <div class="menu-card ${s.popular ? 'popular' : ''}">
+            <div class="copo-card" onclick="openCustomizer('${s.size}')">
                 ${s.badge ? `<div class="badge-card">${s.badge}</div>` : ''}
-                <div class="cup-icon-wrapper">
-                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--purple-700)" stroke-width="2">
-                        <path d="M17 8h1a4 4 0 0 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4V8z"/>
-                        <line x1="6" y1="2" x2="6" y2="4"/>
-                        <line x1="10" y1="2" x2="10" y2="4"/>
-                        <line x1="14" y1="2" x2="14" y2="4"/>
-                    </svg>
+                <div class="copo-img-wrapper">
+                    ${imgHtml}
                 </div>
-                <div class="size">${s.size}</div>
-                <div class="price-box">
-                    ${hasPromo ? `<span class="old-price">R$ ${s.price.toFixed(2)}</span>` : ''}
-                    <div class="price ${hasPromo ? 'promo' : ''}">R$ ${currentPrice.toFixed(2).replace('.', ',')}</div>
-                </div>
+                <h3>Açaí ${s.size}</h3>
+                <div class="price">R$ ${currentPrice.toFixed(2).replace('.', ',')}</div>
+                <button class="btn-select">Escolher Adicionais</button>
             </div>
         `;
     }).join('');
 }
 
-function renderBuilderOptions(sizes, toppings) {
-    const sizeContainer = document.getElementById('size-options');
-    if (sizeContainer && sizes) {
-        const currentChecked = document.querySelector('input[name="tamanho"]:checked')?.value || sizes[0]?.size;
-        sizeContainer.innerHTML = sizes.map(s => {
-            const hasPromo = s.promoPrice !== null && s.promoPrice !== undefined && s.promoPrice < s.price;
-            const finalPrice = hasPromo ? s.promoPrice : s.price;
-            const isChecked = s.size === currentChecked ? 'checked' : '';
+window.openCustomizer = function(size) {
+    currentSelectedSize = size;
+    
+    const modal = document.getElementById('customizer-modal');
+    if (modal) modal.classList.add('active');
 
-            return `
-                <label class="chip">
-                    <input type="radio" name="tamanho" value="${s.size}" data-price="${finalPrice}" ${isChecked}>
-                    <span>${s.size} · R$ ${finalPrice.toFixed(2).replace('.', ',')}</span>
-                </label>
-            `;
-        }).join('');
-    }
+    const modalTitle = document.getElementById('modal-selected-size');
+    if (modalTitle) modalTitle.textContent = `Açaí ${size}`;
 
+    // Reset inputs inside modal
+    document.querySelectorAll('.adicional').forEach(el => el.checked = false);
+    const obs = document.getElementById('obs');
+    if (obs) obs.value = '';
+    const bairro = document.getElementById('bairro');
+    if (bairro) bairro.value = '';
+    const endereco = document.getElementById('endereco');
+    if (endereco) endereco.value = '';
+    const pagamento = document.getElementById('pagamento');
+    if (pagamento) pagamento.value = '';
+
+    updateOrderSummary();
+};
+
+window.closeCustomizer = function() {
+    const modal = document.getElementById('customizer-modal');
+    if (modal) modal.classList.remove('active');
+};
+
+function renderBuilderOptions(toppings) {
     if (toppings) {
         renderToppingCategory('coberturas-container', toppings.coberturas || []);
         renderToppingCategory('frutas-container', toppings.frutas || []);
         renderToppingCategory('completamentos-container', toppings.completamentos || []);
     }
 
-    // Attach Event Listeners
-    const allInputs = document.querySelectorAll('input[name="tamanho"], .adicional');
-    allInputs.forEach(el => el.removeEventListener('change', updateOrderSummary));
-    allInputs.forEach(el => el.addEventListener('change', updateOrderSummary));
+    // Attach Event Listeners inside customizer
+    const allInputs = document.querySelectorAll('.adicional');
+    allInputs.forEach(el => {
+        el.removeEventListener('change', updateOrderSummary);
+        el.addEventListener('change', updateOrderSummary);
+    });
 
     const obs = document.getElementById('obs');
     if (obs) {
@@ -172,11 +142,6 @@ function renderBuilderOptions(sizes, toppings) {
     const sendBtn = document.getElementById('send-order');
     if (sendBtn) {
         sendBtn.onclick = sendWhatsAppOrder;
-    }
-
-    const mobileSendBtn = document.getElementById('mobile-send-order');
-    if (mobileSendBtn) {
-        mobileSendBtn.onclick = sendWhatsAppOrder;
     }
 }
 
@@ -220,12 +185,13 @@ function updateOrderSummary() {
     const FREE_LIMIT = store.freeLimit || 7;
     const EXTRA_PRICE = store.extraPrice || 1.0;
 
-    const sizeInput = document.querySelector('input[name="tamanho"]:checked');
+    const sizeObj = store.sizes.find(s => s.size === currentSelectedSize);
+    const hasPromo = sizeObj && sizeObj.promoPrice !== null && sizeObj.promoPrice !== undefined && sizeObj.promoPrice < sizeObj.price;
+    const basePrice = sizeObj ? (hasPromo ? sizeObj.promoPrice : sizeObj.price) : 0;
+
     const selectedAdicionais = Array.from(document.querySelectorAll('.adicional:checked'));
     const totalSelected = selectedAdicionais.length;
     const extraCount = Math.max(0, totalSelected - FREE_LIMIT);
-
-    const basePrice = sizeInput ? parseFloat(sizeInput.dataset.price) : 0;
     const extraTotal = extraCount * EXTRA_PRICE;
     
     // Delivery fee calculation
@@ -240,66 +206,52 @@ function updateOrderSummary() {
     const summaryList = document.getElementById('summary-list');
     if (summaryList) {
         summaryList.innerHTML = '';
-        if (sizeInput) {
+        if (sizeObj) {
             const li = document.createElement('li');
-            li.innerHTML = `<span>Açaí ${sizeInput.value}</span><span>R$ ${basePrice.toFixed(2).replace('.', ',')}</span>`;
+            li.innerHTML = `<span>Açaí ${sizeObj.size}</span><span>R$ ${basePrice.toFixed(2).replace('.', ',')}</span>`;
             summaryList.appendChild(li);
         }
         if (selectedAdicionais.length > 0) {
             const li = document.createElement('li');
             const itemsStr = selectedAdicionais.map(a => a.value).join(', ');
-            li.innerHTML = `<span>Adicionais (${selectedAdicionais.length})</span><span style="font-size:12.5px; max-width:180px;">${itemsStr}</span>`;
+            li.innerHTML = `<span style="font-size: 13px; color: var(--cream-muted); display: block; max-width: 220px; word-wrap: break-word; text-align: left;">Adicionais: ${itemsStr}</span>`;
             summaryList.appendChild(li);
         }
         if (extraCount > 0) {
             const li = document.createElement('li');
-            li.className = 'extra';
-            li.innerHTML = `<span>+${extraCount} extra(s) fora da cota</span><span>+ R$ ${extraTotal.toFixed(2).replace('.', ',')}</span>`;
+            li.innerHTML = `<span>Extras (${extraCount})</span><span>+R$ ${extraTotal.toFixed(2).replace('.', ',')}</span>`;
             summaryList.appendChild(li);
         }
-        if (deliveryFee > 0 && deliveryLocation) {
+        if (deliveryLocation) {
             const li = document.createElement('li');
-            li.innerHTML = `<span>Taxa de entrega (${deliveryLocation.name})</span><span>R$ ${deliveryFee.toFixed(2).replace('.', ',')}</span>`;
+            li.innerHTML = `<span>Entrega (${deliveryLocation.name})</span><span>R$ ${deliveryFee.toFixed(2).replace('.', ',')}</span>`;
             summaryList.appendChild(li);
         }
     }
 
-    // Total Elements
+    // Total Price Update
     const totalPriceEl = document.getElementById('total-price');
     if (totalPriceEl) {
         totalPriceEl.textContent = `R$ ${finalTotal.toFixed(2).replace('.', ',')}`;
     }
 
-    // Mobile Checkout Bar
-    const mobileTotalVal = document.getElementById('mobile-total-val');
-    if (mobileTotalVal) {
-        mobileTotalVal.textContent = `R$ ${finalTotal.toFixed(2).replace('.', ',')}`;
-    }
-
-    // Free Meter
+    // Free Toppings Meter Update
     const freeMeter = document.getElementById('free-meter');
     if (freeMeter) {
         freeMeter.classList.toggle('over', extraCount > 0);
         if (extraCount > 0) {
-            freeMeter.innerHTML = `<strong>${FREE_LIMIT}</strong> de ${FREE_LIMIT} grátis usados · <strong>+${extraCount}</strong> extra(s) (+R$ ${extraTotal.toFixed(2)})`;
+            freeMeter.innerHTML = `<strong>${FREE_LIMIT}</strong> de ${FREE_LIMIT} grátis usados · <strong>+${extraCount}</strong> extra(s) (+R$ ${extraTotal.toFixed(2).replace('.', ',')})`;
         } else {
             freeMeter.innerHTML = `<strong>${totalSelected}</strong> de ${FREE_LIMIT} adicionais grátis usados`;
         }
-    }
-
-    // Warning when reaching 7 adicionais
-    if (totalSelected === FREE_LIMIT) {
-        freeMeter.style.background = 'rgba(212, 241, 55, 0.2)';
-        freeMeter.style.border = '1px solid var(--lime)';
-    } else {
-        freeMeter.style.background = '';
-        freeMeter.style.border = '';
-    }
-
-    // Topping Counts
-    const compCount = document.getElementById('comp-count');
-    if (compCount) {
-        compCount.textContent = `${totalSelected} selecionado${totalSelected === 1 ? '' : 's'}`;
+        
+        if (totalSelected === FREE_LIMIT) {
+            freeMeter.style.background = 'rgba(212, 241, 55, 0.2)';
+            freeMeter.style.border = '1px solid var(--lime)';
+        } else {
+            freeMeter.style.background = '';
+            freeMeter.style.border = '';
+        }
     }
 
     // SVG Bowl Sprinkles Animation
@@ -307,18 +259,19 @@ function updateOrderSummary() {
     sprinkles.forEach((s, idx) => {
         s.classList.toggle('on', idx < totalSelected);
     });
+
+    // Topping Counts
+    const compCount = document.getElementById('comp-count');
+    if (compCount) {
+        compCount.textContent = `${totalSelected} selecionado${totalSelected === 1 ? '' : 's'}`;
+    }
 }
 
 function sendWhatsAppOrder() {
-    const sizeInput = document.querySelector('input[name="tamanho"]:checked');
-    const hint = document.getElementById('hint');
-
-    if (!sizeInput) {
-        if (hint) hint.style.display = 'block';
+    if (!currentSelectedSize) {
         alert('Por favor, selecione um tamanho de copo.');
         return;
     }
-    if (hint) hint.style.display = 'none';
 
     const store = window.storeAPI.getData();
     const FREE_LIMIT = store.freeLimit || 7;
@@ -339,7 +292,6 @@ function sendWhatsAppOrder() {
         return;
     }
 
-    // Address and payment validation
     const enderecoField = document.getElementById('endereco');
     const endereco = enderecoField ? enderecoField.value.trim() : '';
     
@@ -356,13 +308,16 @@ function sendWhatsAppOrder() {
         return;
     }
 
-    const basePrice = parseFloat(sizeInput.dataset.price);
+    const sizeObj = store.sizes.find(s => s.size === currentSelectedSize);
+    const hasPromo = sizeObj && sizeObj.promoPrice !== null && sizeObj.promoPrice !== undefined && sizeObj.promoPrice < sizeObj.price;
+    const basePrice = sizeObj ? (hasPromo ? sizeObj.promoPrice : sizeObj.price) : 0;
+    
     const extraTotal = extraCount * EXTRA_PRICE;
     const deliveryFee = deliveryLocation ? deliveryLocation.fee : 0;
     const total = basePrice + extraTotal + deliveryFee;
 
     let msg = `✨ *Novo Pedido - AL Açaí* ✨%0A%0A`;
-    msg += `🥤 *Tamanho:* ${sizeInput.value} (R$ ${basePrice.toFixed(2).replace('.', ',')})%0A`;
+    msg += `🥤 *Tamanho:* ${currentSelectedSize} (R$ ${basePrice.toFixed(2).replace('.', ',')})%0A`;
     
     if (selectedAdicionais.length > 0) {
         msg += `🍧 *Adicionais (${selectedAdicionais.length}):*%0A - ${selectedAdicionais.join('%0A - ')}%0A`;
@@ -388,7 +343,7 @@ function sendWhatsAppOrder() {
     try {
         window.storeAPI.saveOrder({
             value: total,
-            size: sizeInput.value,
+            size: currentSelectedSize,
             toppings: selectedAdicionais,
             date: new Date().toISOString()
         });
@@ -396,5 +351,6 @@ function sendWhatsAppOrder() {
         console.error('Erro ao salvar pedido para controle de estoque:', e);
     }
 
+    closeCustomizer();
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 }
