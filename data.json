@@ -33,7 +33,11 @@
   "photos": {
     "logo": "logo.jpeg",
     "heroCup": "",
-    "promoBanner": ""
+    "promoBanner": "",
+    "cup300": "acai.jpg",
+    "cup400": "acai.jpg",
+    "cup500": "acai.jpg",
+    "cup770": "acai.jpg"
   },
   "toppings": {
     "frutas": [

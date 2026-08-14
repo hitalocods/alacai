@@ -101,8 +101,14 @@ async function readData() {
             const res = await pool.query("SELECT value FROM store_data WHERE key = 'store_state'");
             if (res.rows.length > 0) {
                 const dbValue = res.rows[0].value;
-                // Mescla as variáveis do banco com as do arquivo local para garantir novas propriedades (como o estoque)
-                return { ...localData, ...dbValue, inventory: dbValue.inventory || (localData ? localData.inventory : []) };
+                // Mescla as variáveis do banco com as do arquivo local para garantir novas propriedades (como o estoque e novas fotos)
+                const mergedPhotos = { ...(localData ? localData.photos : {}), ...(dbValue.photos || {}) };
+                return { 
+                    ...localData, 
+                    ...dbValue, 
+                    photos: mergedPhotos,
+                    inventory: dbValue.inventory || (localData ? localData.inventory : []) 
+                };
             }
         } catch (err) {
             console.error('Erro ao ler dados do PostgreSQL:', err);
