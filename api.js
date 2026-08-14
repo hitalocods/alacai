@@ -40,21 +40,20 @@ const DEFAULT_DATA = {
     freeLimit: 7,
     extraPrice: 1.00,
     deliveryLocations: [
-        { id: "bairro-1", name: "Centro", fee: 5 },
-        { id: "bairro-2", name: "Teresina Sul", fee: 6 },
-        { id: "bairro-3", name: "Cabral", fee: 7 },
-        { id: "bairro-4", name: "São Cristóvão", fee: 8 },
-        { id: "bairro-5", name: "Pedro II", fee: 6 },
-        { id: "bairro-6", name: "Fátima", fee: 5 },
-        { id: "bairro-7", name: "Ininga", fee: 7 },
-        { id: "bairro-8", name: "Jóquei Clube", fee: 8 },
-        { id: "bairro-9", name: "Satélite", fee: 9 },
-        { id: "bairro-10", name: "PIB", fee: 6 },
-        { id: "bairro-11", name: "Morada Nova", fee: 7 },
-        { id: "bairro-12", name: "Dirceu Arcoverde", fee: 8 },
-        { id: "bairro-13", name: "São Pedro", fee: 5 },
-        { id: "bairro-14", name: "Matadouro", fee: 6 },
-        { id: "bairro-15", name: "Vera Cruz", fee: 7 }
+        { id: "bairro-1", name: "Santa Cruz", fee: 0 },
+        { id: "bairro-2", name: "Promorar", fee: 0 },
+        { id: "bairro-3", name: "Parque Piauí", fee: 0 },
+        { id: "bairro-4", name: "Betinho", fee: 0 },
+        { id: "bairro-5", name: "Santa Fe", fee: 0 },
+        { id: "bairro-6", name: "Km 7", fee: 0 },
+        { id: "bairro-7", name: "Planalto Santa Fe", fee: 0 },
+        { id: "bairro-8", name: "Areias", fee: 0 },
+        { id: "bairro-9", name: "Vila Angélica", fee: 0 },
+        { id: "bairro-10", name: "Afonso gil", fee: 0 },
+        { id: "bairro-11", name: "Vila Carolina", fee: 0 },
+        { id: "bairro-12", name: "São José", fee: 0 },
+        { id: "bairro-13", name: "Paraíso", fee: 0 },
+        { id: "bairro-14", name: "Parque Vitória", fee: 0 }
     ],
     orders: [],
     expenses: [],
@@ -62,16 +61,14 @@ const DEFAULT_DATA = {
         coberturas: [
             { id: "cob-1", name: "Leite condensado", color: "#FBF2E4", icon: "🥛" },
             { id: "cob-2", name: "Chocolate", color: "#6B3B1F", icon: "🍫" },
-            { id: "cob-3", name: "Morango (cobertura)", color: "#FF6F86", icon: "🍓" },
-            { id: "cob-4", name: "Doce de Leite", color: "#D48B38", icon: "🍯" }
+            { id: "cob-3", name: "Morango (cobertura)", color: "#FF6F86", icon: "🍓" }
         ],
         frutas: [
             { id: "fru-1", name: "Morango", color: "#FF6F86", icon: "🍓" },
             { id: "fru-2", name: "Cereja", color: "#C4133C", icon: "🍒" },
             { id: "fru-3", name: "Uva", color: "#6B3FA0", icon: "🍇" },
             { id: "fru-4", name: "Kiwi", color: "#8FBF3F", icon: "🥝" },
-            { id: "fru-5", name: "Banana", color: "#F2B705", icon: "🍌" },
-            { id: "fru-6", name: "Manga", color: "#FF9F1C", icon: "🥭" }
+            { id: "fru-5", name: "Banana", color: "#F2B705", icon: "🍌" }
         ],
         completamentos: [
             { id: "comp-1", name: "M&M", color: "#FF6F86", icon: "🍬" },

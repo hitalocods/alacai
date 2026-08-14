@@ -34,111 +34,12 @@
       "promoPrice": null
     }
   ],
-  "promotions": [
-    {
-      "id": "promo-1",
-      "badge": "OFERTA DO DIA",
-      "title": "Super Promoção 500ml",
-      "active": true,
-      "discount": "15% OFF",
-      "targetSize": "500 ml",
-      "description": "Leve o copo de 500ml de R$ 20 por apenas R$ 16,90 com 7 adicionais inclusos!"
-    },
-    {
-      "id": "promo-2",
-      "badge": "COMBO",
-      "title": "Combo Casal / Amigos",
-      "active": true,
-      "discount": "BRINDE ESPECIAL",
-      "targetSize": "770 ml",
-      "description": "Na compra de 2 copos de 770ml, ganhe cobertura de Nutella extra!"
-    }
-  ],
+  "orders": [],
   "photos": {
-    "heroCup": "",
     "logo": "logo.jpeg",
+    "heroCup": "",
     "promoBanner": ""
   },
-  "freeLimit": 7,
-  "extraPrice": 1,
-  "deliveryLocations": [
-    {
-      "id": "bairro-1",
-      "fee": 5,
-      "name": "Centro"
-    },
-    {
-      "id": "bairro-2",
-      "fee": 6,
-      "name": "Teresina Sul"
-    },
-    {
-      "id": "bairro-3",
-      "fee": 7,
-      "name": "Cabral"
-    },
-    {
-      "id": "bairro-4",
-      "fee": 8,
-      "name": "São Cristóvão"
-    },
-    {
-      "id": "bairro-5",
-      "fee": 6,
-      "name": "Pedro II"
-    },
-    {
-      "id": "bairro-6",
-      "fee": 5,
-      "name": "Fátima"
-    },
-    {
-      "id": "bairro-7",
-      "fee": 7,
-      "name": "Ininga"
-    },
-    {
-      "id": "bairro-8",
-      "fee": 8,
-      "name": "Jóquei Clube"
-    },
-    {
-      "id": "bairro-9",
-      "fee": 9,
-      "name": "Satélite"
-    },
-    {
-      "id": "bairro-10",
-      "fee": 6,
-      "name": "PIB"
-    },
-    {
-      "id": "bairro-11",
-      "fee": 7,
-      "name": "Morada Nova"
-    },
-    {
-      "id": "bairro-12",
-      "fee": 8,
-      "name": "Dirceu Arcoverde"
-    },
-    {
-      "id": "bairro-13",
-      "fee": 5,
-      "name": "São Pedro"
-    },
-    {
-      "id": "bairro-14",
-      "fee": 6,
-      "name": "Matadouro"
-    },
-    {
-      "id": "bairro-15",
-      "fee": 7,
-      "name": "Vera Cruz"
-    }
-  ],
-  "orders": [],
   "expenses": [],
   "toppings": {
     "frutas": [
@@ -171,12 +72,6 @@
         "icon": "🍌",
         "name": "Banana",
         "color": "#F2B705"
-      },
-      {
-        "id": "fru-6",
-        "icon": "🥭",
-        "name": "Manga",
-        "color": "#FF9F1C"
       }
     ],
     "coberturas": [
@@ -197,12 +92,6 @@
         "icon": "🍓",
         "name": "Morango (cobertura)",
         "color": "#FF6F86"
-      },
-      {
-        "id": "cob-4",
-        "icon": "🍯",
-        "name": "Doce de Leite",
-        "color": "#D48B38"
       }
     ],
     "completamentos": [
@@ -288,6 +177,7 @@
       }
     ]
   },
+  "freeLimit": 7,
   "inventory": [
     {
       "id": "inv-size-300",
@@ -344,6 +234,99 @@
       "unit": "bandejas",
       "minQty": 5,
       "linkedItem": "fru-1"
+    }
+  ],
+  "extraPrice": 1,
+  "promotions": [
+    {
+      "id": "promo-1",
+      "badge": "OFERTA DO DIA",
+      "title": "Super Promoção 500ml",
+      "active": true,
+      "discount": "15% OFF",
+      "targetSize": "500 ml",
+      "description": "Leve o copo de 500ml de R$ 20 por apenas R$ 16,90 com 7 adicionais inclusos!"
+    },
+    {
+      "id": "promo-2",
+      "badge": "COMBO",
+      "title": "Combo Casal / Amigos",
+      "active": true,
+      "discount": "BRINDE ESPECIAL",
+      "targetSize": "770 ml",
+      "description": "Na compra de 2 copos de 770ml, ganhe cobertura de Nutella extra!"
+    }
+  ],
+  "deliveryLocations": [
+    {
+      "id": "bairro-1",
+      "fee": 0,
+      "name": "Santa Cruz"
+    },
+    {
+      "id": "bairro-2",
+      "fee": 0,
+      "name": "Promorar"
+    },
+    {
+      "id": "bairro-3",
+      "fee": 0,
+      "name": "Parque Piauí"
+    },
+    {
+      "id": "bairro-4",
+      "fee": 0,
+      "name": "Betinho"
+    },
+    {
+      "id": "bairro-5",
+      "fee": 0,
+      "name": "Santa Fe"
+    },
+    {
+      "id": "bairro-6",
+      "fee": 0,
+      "name": "Km 7"
+    },
+    {
+      "id": "bairro-7",
+      "fee": 0,
+      "name": "Planalto Santa Fe"
+    },
+    {
+      "id": "bairro-8",
+      "fee": 0,
+      "name": "Areias"
+    },
+    {
+      "id": "bairro-9",
+      "fee": 0,
+      "name": "Vila Angélica"
+    },
+    {
+      "id": "bairro-10",
+      "fee": 0,
+      "name": "Afonso gil"
+    },
+    {
+      "id": "bairro-11",
+      "fee": 0,
+      "name": "Vila Carolina"
+    },
+    {
+      "id": "bairro-12",
+      "fee": 0,
+      "name": "São José"
+    },
+    {
+      "id": "bairro-13",
+      "fee": 0,
+      "name": "Paraíso"
+    },
+    {
+      "id": "bairro-14",
+      "fee": 0,
+      "name": "Parque Vitória"
     }
   ]
 }
