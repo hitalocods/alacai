@@ -1267,8 +1267,8 @@ footer .foot-note {
 }
 
 .copo-img-wrapper {
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1516,6 +1516,11 @@ footer .foot-note {
     
     .copo-card {
         padding: 20px;
+    }
+    
+    .copo-img-wrapper {
+        width: 130px;
+        height: 130px;
     }
     
     .modal-header {

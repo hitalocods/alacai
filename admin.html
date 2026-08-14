@@ -36,6 +36,31 @@
             <div class="admin-body">
                 <!-- TAB 1: Dashboard -->
                 <div class="admin-tab-content active" id="tab-dashboard">
+                    <!-- Filtro de Competência Mensal -->
+                    <div class="dashboard-filter-bar" style="margin-bottom: 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; background: rgba(255,255,255,0.01); padding: 12px 18px; border-radius: 12px; border: 1px solid var(--border-subtle);">
+                        <h3 style="margin: 0; color: #fff; font-size: 16px;">📊 Período de Análise</h3>
+                        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                            <select id="filter-month" class="form-control" style="width: 160px; height: 38px; margin-bottom: 0; background: var(--bg-card); border-color: var(--border-subtle); color: #fff;">
+                                <option value="all">Todos os Meses</option>
+                                <option value="0">Janeiro</option>
+                                <option value="1">Fevereiro</option>
+                                <option value="2">Março</option>
+                                <option value="3">Abril</option>
+                                <option value="4">Maio</option>
+                                <option value="5">Junho</option>
+                                <option value="6">Julho</option>
+                                <option value="7">Agosto</option>
+                                <option value="8">Setembro</option>
+                                <option value="9">Outubro</option>
+                                <option value="10">Novembro</option>
+                                <option value="11">Dezembro</option>
+                            </select>
+                            <select id="filter-year" class="form-control" style="width: 100px; height: 38px; margin-bottom: 0; background: var(--bg-card); border-color: var(--border-subtle); color: #fff;">
+                                <!-- Populated dynamically in admin.js -->
+                            </select>
+                        </div>
+                    </div>
+
                     <div class="dashboard-stats">
                         <div class="stat-card">
                             <div class="stat-icon">💰</div>

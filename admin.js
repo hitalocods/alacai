@@ -131,6 +131,37 @@ function renderAdminData() {
 
 /* --- TAB 1: DASHBOARD --- */
 function initDashboard() {
+    // Populate filter year options
+    const filterYearSelect = document.getElementById('filter-year');
+    if (filterYearSelect && filterYearSelect.children.length === 0) {
+        const currentYear = new Date().getFullYear();
+        for (let y = 2025; y <= currentYear + 2; y++) {
+            const opt = document.createElement('option');
+            opt.value = y;
+            opt.textContent = y;
+            if (y === currentYear) opt.selected = true;
+            filterYearSelect.appendChild(opt);
+        }
+    }
+
+    // Set current month as default select
+    const filterMonthSelect = document.getElementById('filter-month');
+    if (filterMonthSelect && filterMonthSelect.value === 'all') {
+        const currentMonth = new Date().getMonth(); // 0-11
+        filterMonthSelect.value = currentMonth.toString();
+    }
+
+    // Add change listeners
+    if (filterMonthSelect) {
+        // Remove existing listener to prevent duplicate binding if init is called multiple times
+        filterMonthSelect.removeEventListener('change', renderAdminData);
+        filterMonthSelect.addEventListener('change', renderAdminData);
+    }
+    if (filterYearSelect) {
+        filterYearSelect.removeEventListener('change', renderAdminData);
+        filterYearSelect.addEventListener('change', renderAdminData);
+    }
+
     const orderForm = document.getElementById('form-order');
     if (orderForm) {
         orderForm.addEventListener('submit', (e) => {
@@ -189,17 +220,46 @@ function renderDashboard(data) {
     const now = new Date();
     const today = now.toDateString();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const filterMonthEl = document.getElementById('filter-month');
+    const filterYearEl = document.getElementById('filter-year');
+    const selectedMonth = filterMonthEl ? filterMonthEl.value : new Date().getMonth().toString();
+    const selectedYear = filterYearEl ? parseInt(filterYearEl.value) : new Date().getFullYear();
 
     const orders = data.orders || [];
     const expenses = data.expenses || [];
 
-    // Calculations
+    // Filter helper based on dropdown selection
+    const filterBySelectedPeriod = (itemDateStr) => {
+        const d = new Date(itemDateStr);
+        const yearMatches = d.getFullYear() === selectedYear;
+        const monthMatches = selectedMonth === 'all' || d.getMonth() === parseInt(selectedMonth);
+        return yearMatches && monthMatches;
+    };
+
+    // Live Stats (Absolute relative periods)
     const dailyProfit = orders.filter(o => new Date(o.date).toDateString() === today).reduce((sum, o) => sum + o.value, 0);
     const weeklyProfit = orders.filter(o => new Date(o.date) >= weekAgo).reduce((sum, o) => sum + o.value, 0);
-    const monthlyProfit = orders.filter(o => new Date(o.date) >= monthStart).reduce((sum, o) => sum + o.value, 0);
-    const monthlyExpensesTotal = expenses.filter(e => new Date(e.date) >= monthStart).reduce((sum, e) => sum + e.value, 0);
+
+    // Selected Month/Year Stats
+    const monthlyProfit = orders.filter(o => filterBySelectedPeriod(o.date)).reduce((sum, o) => sum + o.value, 0);
+    const monthlyExpensesTotal = expenses.filter(e => filterBySelectedPeriod(e.date)).reduce((sum, e) => sum + e.value, 0);
     const netProfit = monthlyProfit - monthlyExpensesTotal;
+
+    // Dynamically update labels based on selected month
+    const monthsNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+    const monthText = selectedMonth === 'all' ? 'Mês' : monthsNames[parseInt(selectedMonth)];
+
+    const updateLabel = (id, baseText) => {
+        const el = document.getElementById(id);
+        if (el) {
+            const labelEl = el.previousElementSibling || el.parentElement.querySelector('.stat-label');
+            if (labelEl) labelEl.textContent = `${baseText} (${monthText})`;
+        }
+    };
+    updateLabel('stat-monthly', 'Faturamento');
+    updateLabel('stat-expenses', 'Despesas');
+    updateLabel('stat-net-profit', 'Lucro Líquido');
 
     // Dom updates
     if (document.getElementById('stat-daily')) document.getElementById('stat-daily').textContent = `R$ ${dailyProfit.toFixed(2).replace('.', ',')}`;
@@ -220,7 +280,8 @@ function renderDashboard(data) {
     // Render tables
     const ordersBody = document.getElementById('table-orders-body');
     if (ordersBody) {
-        ordersBody.innerHTML = orders.slice(-10).reverse().map(order => {
+        const filteredOrders = orders.filter(o => filterBySelectedPeriod(o.date));
+        ordersBody.innerHTML = filteredOrders.slice(-10).reverse().map(order => {
             const date = new Date(order.date);
             return `
                 <tr>
@@ -230,12 +291,13 @@ function renderDashboard(data) {
                     <td><button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">Excluir</button></td>
                 </tr>
             `;
-        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhum pedido hoje</td></tr>';
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhum pedido neste período</td></tr>';
     }
 
     const expensesBody = document.getElementById('table-expenses-body');
     if (expensesBody) {
-        expensesBody.innerHTML = expenses.slice(-10).reverse().map(expense => {
+        const filteredExpenses = expenses.filter(e => filterBySelectedPeriod(e.date));
+        expensesBody.innerHTML = filteredExpenses.slice(-10).reverse().map(expense => {
             const date = new Date(expense.date);
             return `
                 <tr>
@@ -245,21 +307,21 @@ function renderDashboard(data) {
                     <td><button class="btn btn-sm btn-danger" onclick="deleteExpense('${expense.id}')">Excluir</button></td>
                 </tr>
             `;
-        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma despesa este mês</td></tr>';
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma despesa neste período</td></tr>';
     }
 
     // Render Consolidated Cash Flow
     const cashflowBody = document.getElementById('table-cashflow-body');
     if (cashflowBody) {
         const cashFlowList = [
-            ...orders.map(o => ({
+            ...orders.filter(o => filterBySelectedPeriod(o.date)).map(o => ({
                 id: o.id,
                 date: new Date(o.date),
                 type: 'entry',
                 desc: `Venda - Copo ${o.size}`,
                 value: o.value
             })),
-            ...expenses.map(e => ({
+            ...expenses.filter(e => filterBySelectedPeriod(e.date)).map(e => ({
                 id: e.id,
                 date: new Date(e.date),
                 type: 'expense',
@@ -287,7 +349,7 @@ function renderDashboard(data) {
                     <td class="${valClass}">${prefix} R$ ${item.value.toFixed(2).replace('.', ',')}</td>
                 </tr>
             `;
-        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma movimentação registrada</td></tr>';
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma movimentação registrada neste período</td></tr>';
     }
 }
 
