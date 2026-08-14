@@ -384,5 +384,17 @@ function sendWhatsAppOrder() {
     msg += `💳 *Forma de Pagamento:* ${pagamento}%0A`;
     msg += `%0A💰 *Total:* R$ ${total.toFixed(2).replace('.', ',')}`;
 
+    // Salva o pedido para registrar estatísticas e dar baixa no estoque
+    try {
+        window.storeAPI.saveOrder({
+            value: total,
+            size: sizeInput.value,
+            toppings: selectedAdicionais,
+            date: new Date().toISOString()
+        });
+    } catch (e) {
+        console.error('Erro ao salvar pedido para controle de estoque:', e);
+    }
+
     window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
 }

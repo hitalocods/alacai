@@ -86,26 +86,30 @@ async function initDatabase() {
 
 // Helper: read data
 async function readData() {
+    let localData = null;
+    try {
+        if (fs.existsSync(DATA_FILE)) {
+            const raw = fs.readFileSync(DATA_FILE, 'utf8');
+            localData = JSON.parse(raw);
+        }
+    } catch (err) {
+        console.error('Erro ao ler data.json:', err);
+    }
+
     if (isDbConnected) {
         try {
             const res = await pool.query("SELECT value FROM store_data WHERE key = 'store_state'");
             if (res.rows.length > 0) {
-                return res.rows[0].value;
+                const dbValue = res.rows[0].value;
+                // Mescla as variáveis do banco com as do arquivo local para garantir novas propriedades (como o estoque)
+                return { ...localData, ...dbValue, inventory: dbValue.inventory || (localData ? localData.inventory : []) };
             }
         } catch (err) {
             console.error('Erro ao ler dados do PostgreSQL:', err);
         }
     }
 
-    try {
-        if (fs.existsSync(DATA_FILE)) {
-            const raw = fs.readFileSync(DATA_FILE, 'utf8');
-            return JSON.parse(raw);
-        }
-    } catch (err) {
-        console.error('Erro ao ler data.json:', err);
-    }
-    return null;
+    return localData;
 }
 
 // Helper: write data

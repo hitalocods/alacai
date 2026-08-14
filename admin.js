@@ -1,9 +1,9 @@
 /**
- * AL Açaí - Admin CRUD Management Module
+ * AL Açaí - Admin Dashboard Control Panel Module
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    initAdminModal();
+    initAdminPanel();
 });
 
 function showToast(msg) {
@@ -19,37 +19,7 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 3000);
 }
 
-function initAdminModal() {
-    const modalOverlay = document.getElementById('admin-modal-overlay');
-    const closeBtn = document.getElementById('admin-close');
-    const adminTriggers = document.querySelectorAll('.btn-admin-trigger');
-
-    adminTriggers.forEach(btn => {
-        btn.addEventListener('click', () => {
-            modalOverlay.classList.add('active');
-            renderAdminData();
-        });
-    });
-
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => modalOverlay.classList.remove('active'));
-    }
-
-    if (modalOverlay) {
-        modalOverlay.addEventListener('click', (e) => {
-            if (e.target === modalOverlay) modalOverlay.classList.remove('active');
-        });
-    }
-
-    // Keyboard shortcut: Ctrl + Shift + A
-    window.addEventListener('keydown', (e) => {
-        if (e.ctrlKey && e.shiftKey && (e.key === 'A' || e.key === 'a')) {
-            e.preventDefault();
-            modalOverlay.classList.toggle('active');
-            if (modalOverlay.classList.contains('active')) renderAdminData();
-        }
-    });
-
+function initAdminPanel() {
     // Tab switching
     const tabs = document.querySelectorAll('.admin-tab');
     tabs.forEach(tab => {
@@ -62,8 +32,9 @@ function initAdminModal() {
         });
     });
 
-    // Form Submissions
+    // Initialize all forms
     initDashboard();
+    initInventoryForm();
     initPriceForm();
     initPromoForm();
     initPhotosForm();
@@ -71,21 +42,87 @@ function initAdminModal() {
     initDeliveryForm();
     initMobileMenu();
 
+    // Toppings Filter Select Listener
+    const toppingFilterSelect = document.getElementById('topping-category-select');
+    if (toppingFilterSelect) {
+        toppingFilterSelect.addEventListener('change', renderFilteredToppings);
+    }
+
     const resetBtn = document.getElementById('admin-reset-data');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            if (confirm('Tem certeza que deseja restaurar os dados originais do cardápio?')) {
+            if (confirm('Tem certeza que deseja restaurar os dados originais do cardápio e estoque?')) {
                 window.storeAPI.resetToDefaults();
                 renderAdminData();
                 showToast('Dados restaurados com sucesso!');
             }
         });
     }
+
+    // Initial render
+    renderAdminData();
 }
 
 function renderAdminData() {
     const data = window.storeAPI.getData();
+    
+    // 1. Populate dynamic manual order form selects & checklist
+    const orderSizeSelect = document.getElementById('order-size');
+    if (orderSizeSelect && data.sizes) {
+        const prevSizeVal = orderSizeSelect.value;
+        orderSizeSelect.innerHTML = data.sizes.map(s => `<option value="${s.size}">${s.size}</option>`).join('');
+        if (prevSizeVal) orderSizeSelect.value = prevSizeVal;
+    }
+
+    const orderToppingsList = document.getElementById('order-toppings-list');
+    if (orderToppingsList && data.toppings) {
+        const allToppings = [
+            ...(data.toppings.coberturas || []),
+            ...(data.toppings.frutas || []),
+            ...(data.toppings.completamentos || [])
+        ];
+        orderToppingsList.innerHTML = allToppings.map(t => `
+            <label class="topping-check-item">
+                <input type="checkbox" name="order-toppings" value="${t.name}">
+                <span>${t.icon || '🍧'} ${t.name}</span>
+            </label>
+        `).join('');
+    }
+
+    // 2. Populate promo target select
+    const promoTargetSelect = document.getElementById('promo-target');
+    if (promoTargetSelect && data.sizes) {
+        const prevVal = promoTargetSelect.value;
+        promoTargetSelect.innerHTML = `<option value="">Nenhum tamanho</option>` + data.sizes.map(s => `<option value="${s.size}">${s.size}</option>`).join('');
+        if (prevVal) promoTargetSelect.value = prevVal;
+    }
+
+    // 3. Populate inventory linked items select
+    const invLinkSelect = document.getElementById('inventory-link');
+    if (invLinkSelect && data.sizes && data.toppings) {
+        const prevVal = invLinkSelect.value;
+        let html = '<option value="">Nenhum vínculo</option>';
+        html += '<optgroup label="Tamanhos de Copos">';
+        data.sizes.forEach(s => {
+            html += `<option value="${s.id}">Copo: ${s.size}</option>`;
+        });
+        html += '</optgroup><optgroup label="Adicionais">';
+        const allToppings = [
+            ...(data.toppings.coberturas || []),
+            ...(data.toppings.frutas || []),
+            ...(data.toppings.completamentos || [])
+        ];
+        allToppings.forEach(t => {
+            html += `<option value="${t.id}">Adicional: ${t.name}</option>`;
+        });
+        html += '</optgroup>';
+        invLinkSelect.innerHTML = html;
+        if (prevVal) invLinkSelect.value = prevVal;
+    }
+
+    // 4. Call individual render methods
     renderDashboard(data);
+    renderInventory(data);
     renderPriceTable(data.sizes);
     renderPromoTable(data.promotions);
     renderPhotosFormValues(data.photos);
@@ -93,8 +130,63 @@ function renderAdminData() {
     renderDeliveryTable(data.deliveryLocations);
 }
 
+/* --- TAB 1: DASHBOARD --- */
+function initDashboard() {
+    const orderForm = document.getElementById('form-order');
+    if (orderForm) {
+        orderForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const value = parseFloat(document.getElementById('order-value').value);
+            const size = document.getElementById('order-size').value;
+
+            if (isNaN(value) || value <= 0) {
+                alert('Por favor, insira um valor válido.');
+                return;
+            }
+
+            // Gather manual order toppings
+            const checkedBoxes = Array.from(document.querySelectorAll('input[name="order-toppings"]:checked'));
+            const toppings = checkedBoxes.map(cb => cb.value);
+
+            window.storeAPI.saveOrder({
+                value,
+                size,
+                toppings,
+                date: new Date().toISOString()
+            });
+
+            orderForm.reset();
+            renderAdminData();
+            showToast('Pedido registrado e estoque reduzido!');
+        });
+    }
+
+    const expenseForm = document.getElementById('form-expense');
+    if (expenseForm) {
+        expenseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const description = document.getElementById('expense-desc').value.trim();
+            const value = parseFloat(document.getElementById('expense-value').value);
+
+            if (!description || isNaN(value) || value <= 0) {
+                alert('Por favor, preencha todos os campos corretamente.');
+                return;
+            }
+
+            window.storeAPI.saveExpense({
+                description,
+                value,
+                date: new Date().toISOString()
+            });
+
+            expenseForm.reset();
+            renderAdminData();
+            showToast('Despesa registrada!');
+        });
+    }
+}
+
 function renderDashboard(data) {
-    // Calculate stats
     const now = new Date();
     const today = now.toDateString();
     const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
@@ -103,73 +195,47 @@ function renderDashboard(data) {
     const orders = data.orders || [];
     const expenses = data.expenses || [];
 
-    // Daily profit
-    const dailyOrders = orders.filter(o => new Date(o.date).toDateString() === today);
-    const dailyProfit = dailyOrders.reduce((sum, o) => sum + o.value, 0);
+    // Calculations
+    const dailyProfit = orders.filter(o => new Date(o.date).toDateString() === today).reduce((sum, o) => sum + o.value, 0);
+    const weeklyProfit = orders.filter(o => new Date(o.date) >= weekAgo).reduce((sum, o) => sum + o.value, 0);
+    const monthlyProfit = orders.filter(o => new Date(o.date) >= monthStart).reduce((sum, o) => sum + o.value, 0);
+    const monthlyExpensesTotal = expenses.filter(e => new Date(e.date) >= monthStart).reduce((sum, e) => sum + e.value, 0);
 
-    // Weekly profit
-    const weeklyOrders = orders.filter(o => new Date(o.date) >= weekAgo);
-    const weeklyProfit = weeklyOrders.reduce((sum, o) => sum + o.value, 0);
+    // Dom updates
+    if (document.getElementById('stat-daily')) document.getElementById('stat-daily').textContent = `R$ ${dailyProfit.toFixed(2).replace('.', ',')}`;
+    if (document.getElementById('stat-weekly')) document.getElementById('stat-weekly').textContent = `R$ ${weeklyProfit.toFixed(2).replace('.', ',')}`;
+    if (document.getElementById('stat-monthly')) document.getElementById('stat-monthly').textContent = `R$ ${monthlyProfit.toFixed(2).replace('.', ',')}`;
+    if (document.getElementById('stat-expenses')) document.getElementById('stat-expenses').textContent = `R$ ${monthlyExpensesTotal.toFixed(2).replace('.', ',')}`;
 
-    // Monthly profit
-    const monthlyOrders = orders.filter(o => new Date(o.date) >= monthStart);
-    const monthlyProfit = monthlyOrders.reduce((sum, o) => sum + o.value, 0);
-
-    // Monthly expenses
-    const monthlyExpenses = expenses.filter(e => new Date(e.date) >= monthStart);
-    const monthlyExpensesTotal = monthlyExpenses.reduce((sum, e) => sum + e.value, 0);
-
-    // Update stat cards
-    const dailyEl = document.getElementById('stat-daily');
-    if (dailyEl) dailyEl.textContent = `R$ ${dailyProfit.toFixed(2).replace('.', ',')}`;
-
-    const weeklyEl = document.getElementById('stat-weekly');
-    if (weeklyEl) weeklyEl.textContent = `R$ ${weeklyProfit.toFixed(2).replace('.', ',')}`;
-
-    const monthlyEl = document.getElementById('stat-monthly');
-    if (monthlyEl) monthlyEl.textContent = `R$ ${monthlyProfit.toFixed(2).replace('.', ',')}`;
-
-    const expensesEl = document.getElementById('stat-expenses');
-    if (expensesEl) expensesEl.textContent = `R$ ${monthlyExpensesTotal.toFixed(2).replace('.', ',')}`;
-
-    // Render orders table
+    // Render tables
     const ordersBody = document.getElementById('table-orders-body');
     if (ordersBody) {
-        ordersBody.innerHTML = '';
-        const recentOrders = orders.slice(-10).reverse();
-        recentOrders.forEach(order => {
+        ordersBody.innerHTML = orders.slice(-10).reverse().map(order => {
             const date = new Date(order.date);
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</td>
-                <td>${order.size}</td>
-                <td>R$ ${order.value.toFixed(2).replace('.', ',')}</td>
-                <td>
-                    <button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">Excluir</button>
-                </td>
+            return `
+                <tr>
+                    <td>${date.toLocaleDateString('pt-BR')} ${date.toLocaleTimeString('pt-BR', {hour: '2-digit', minute:'2-digit'})}</td>
+                    <td><strong>${order.size}</strong></td>
+                    <td>R$ ${order.value.toFixed(2).replace('.', ',')}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="deleteOrder('${order.id}')">Excluir</button></td>
+                </tr>
             `;
-            ordersBody.appendChild(tr);
-        });
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhum pedido hoje</td></tr>';
     }
 
-    // Render expenses table
     const expensesBody = document.getElementById('table-expenses-body');
     if (expensesBody) {
-        expensesBody.innerHTML = '';
-        const recentExpenses = expenses.slice(-10).reverse();
-        recentExpenses.forEach(expense => {
+        expensesBody.innerHTML = expenses.slice(-10).reverse().map(expense => {
             const date = new Date(expense.date);
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>${date.toLocaleDateString('pt-BR')}</td>
-                <td>${expense.description}</td>
-                <td>R$ ${expense.value.toFixed(2).replace('.', ',')}</td>
-                <td>
-                    <button class="btn btn-sm btn-danger" onclick="deleteExpense('${expense.id}')">Excluir</button>
-                </td>
+            return `
+                <tr>
+                    <td>${date.toLocaleDateString('pt-BR')}</td>
+                    <td><strong>${expense.description}</strong></td>
+                    <td>R$ ${expense.value.toFixed(2).replace('.', ',')}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="deleteExpense('${expense.id}')">Excluir</button></td>
+                </tr>
             `;
-            expensesBody.appendChild(tr);
-        });
+        }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma despesa este mês</td></tr>';
     }
 }
 
@@ -189,7 +255,146 @@ window.deleteExpense = function(id) {
     }
 };
 
-/* --- TAB 1: PREÇOS & TAMANHOS --- */
+/* --- TAB 2: ESTOQUE --- */
+function initInventoryForm() {
+    const form = document.getElementById('form-inventory');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const id = document.getElementById('inventory-id').value;
+        const name = document.getElementById('inventory-name').value.trim();
+        const qty = parseFloat(document.getElementById('inventory-qty').value);
+        const minQty = parseFloat(document.getElementById('inventory-min-qty').value);
+        const unit = document.getElementById('inventory-unit').value.trim();
+        const linkedItem = document.getElementById('inventory-link').value;
+
+        if (!name || isNaN(qty) || isNaN(minQty) || !unit) {
+            alert('Preencha os campos de estoque corretamente!');
+            return;
+        }
+
+        window.storeAPI.saveInventoryItem({
+            id: id || undefined,
+            name,
+            qty,
+            minQty,
+            unit,
+            linkedItem: linkedItem || null
+        });
+
+        form.reset();
+        document.getElementById('inventory-id').value = '';
+        document.getElementById('inventory-form-title').textContent = '➕ Cadastrar/Editar Item';
+        renderAdminData();
+        showToast('Item de estoque salvo!');
+    });
+}
+
+function renderInventory(data) {
+    const inventory = data.inventory || [];
+    
+    // Update dashboard summary
+    if (document.getElementById('inv-stat-total')) document.getElementById('inv-stat-total').textContent = inventory.length;
+
+    const alertCount = inventory.filter(item => item.qty <= item.minQty).length;
+    const alertEl = document.getElementById('inv-stat-alert');
+    if (alertEl) {
+        alertEl.textContent = alertCount;
+        alertEl.className = alertCount > 0 ? 'stat-value alarm-critical' : 'stat-value';
+    }
+
+    const tbody = document.getElementById('table-inventory-body');
+    if (!tbody) return;
+
+    tbody.innerHTML = inventory.map(item => {
+        let statusBadge = '<span class="status-badge status-ok">OK</span>';
+        if (item.qty === 0) {
+            statusBadge = '<span class="status-badge status-out">Esgotado</span>';
+        } else if (item.qty <= item.minQty) {
+            statusBadge = '<span class="status-badge status-low">Crítico</span>';
+        }
+
+        let linkLabel = '';
+        if (item.linkedItem) {
+            const size = data.sizes.find(s => s.id === item.linkedItem);
+            if (size) {
+                linkLabel = `<br><span class="linked-badge">🔗 Copo ${size.size}</span>`;
+            } else {
+                const allToppings = [
+                    ...(data.toppings.coberturas || []),
+                    ...(data.toppings.frutas || []),
+                    ...(data.toppings.completamentos || [])
+                ];
+                const topping = allToppings.find(t => t.id === item.linkedItem);
+                if (topping) {
+                    linkLabel = `<br><span class="linked-badge">🔗 Adic. ${topping.name}</span>`;
+                }
+            }
+        }
+
+        return `
+            <tr>
+                <td>
+                    <strong>${item.name}</strong>
+                    ${linkLabel}
+                </td>
+                <td><strong>${item.qty}</strong></td>
+                <td>${item.minQty}</td>
+                <td><small>${item.unit}</small></td>
+                <td>${statusBadge}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn btn-sm btn-edit" onclick="changeInventoryQty('${item.id}', 10)">+10</button>
+                        <button class="btn btn-sm btn-edit" onclick="changeInventoryQty('${item.id}', -10)">-10</button>
+                        <button class="btn btn-sm btn-edit" style="border-color: var(--lime); color: var(--lime);" onclick="editInventoryItem('${item.id}')">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteInventoryItem('${item.id}')">Excluir</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('') || '<tr><td colspan="6" style="text-align:center;">Nenhum item cadastrado no estoque.</td></tr>';
+}
+
+window.changeInventoryQty = function(id, delta) {
+    const data = window.storeAPI.getData();
+    const item = data.inventory.find(i => i.id === id);
+    if (!item) return;
+
+    const newQty = Math.max(0, parseFloat((item.qty + delta).toFixed(2)));
+    window.storeAPI.saveInventoryItem({
+        ...item,
+        qty: newQty
+    });
+    renderAdminData();
+    showToast(`Estoque ajustado: ${newQty} ${item.unit}`);
+};
+
+window.editInventoryItem = function(id) {
+    const data = window.storeAPI.getData();
+    const item = data.inventory.find(i => i.id === id);
+    if (!item) return;
+
+    document.getElementById('inventory-id').value = item.id;
+    document.getElementById('inventory-name').value = item.name;
+    document.getElementById('inventory-qty').value = item.qty;
+    document.getElementById('inventory-min-qty').value = item.minQty;
+    document.getElementById('inventory-unit').value = item.unit;
+    document.getElementById('inventory-link').value = item.linkedItem || '';
+
+    document.getElementById('inventory-form-title').textContent = '✏️ Editar Item de Estoque';
+    showToast(`Editando ${item.name}`);
+};
+
+window.deleteInventoryItem = function(id) {
+    if (confirm('Deseja excluir este item do estoque?')) {
+        window.storeAPI.deleteInventoryItem(id);
+        renderAdminData();
+        showToast('Item excluído do estoque!');
+    }
+};
+
+/* --- TAB 3: PREÇOS & TAMANHOS --- */
 function initPriceForm() {
     const form = document.getElementById('form-price');
     if (!form) return;
@@ -227,12 +432,9 @@ function initPriceForm() {
 function renderPriceTable(sizes) {
     const tbody = document.getElementById('table-prices-body');
     if (!tbody) return;
-    tbody.innerHTML = '';
-
-    sizes.forEach(s => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td><strong>${s.size}</strong> ${s.badge ? `<span class="badge badge-berry">${s.badge}</span>` : ''}</td>
+    tbody.innerHTML = sizes.map(s => `
+        <tr>
+            <td><strong>${s.size}</strong> ${s.badge ? `<span class="badge-pill">${s.badge}</span>` : ''}</td>
             <td>R$ ${s.price.toFixed(2)}</td>
             <td>${s.promoPrice ? `R$ ${s.promoPrice.toFixed(2)}` : '-'}</td>
             <td>
@@ -241,9 +443,8 @@ function renderPriceTable(sizes) {
                     <button class="btn btn-sm btn-danger" onclick="deletePrice('${s.id}')">Excluir</button>
                 </div>
             </td>
-        `;
-        tbody.appendChild(tr);
-    });
+        </tr>
+    `).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhum preço cadastrado</td></tr>';
 }
 
 window.editPrice = function(id) {
@@ -267,7 +468,7 @@ window.deletePrice = function(id) {
     }
 };
 
-/* --- TAB 2: PROMOÇÕES --- */
+/* --- TAB 4: PROMOÇÕES --- */
 function initPromoForm() {
     const form = document.getElementById('form-promo');
     if (!form) return;
@@ -280,6 +481,7 @@ function initPromoForm() {
         const discount = document.getElementById('promo-discount').value.trim();
         const targetSize = document.getElementById('promo-target').value.trim();
         const badge = document.getElementById('promo-badge').value.trim();
+        const active = document.getElementById('promo-active').checked;
 
         if (!title || !discount) {
             alert('Preencha ao menos o título e a tag de desconto!');
@@ -293,7 +495,7 @@ function initPromoForm() {
             discount,
             targetSize,
             badge: badge || 'PROMO',
-            active: true
+            active
         });
 
         form.reset();
@@ -306,26 +508,22 @@ function initPromoForm() {
 function renderPromoTable(promotions) {
     const tbody = document.getElementById('table-promos-body');
     if (!tbody) return;
-    tbody.innerHTML = '';
-
-    promotions.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+    tbody.innerHTML = promotions.map(p => `
+        <tr>
             <td>
                 <strong>${p.title}</strong><br>
                 <small style="color: var(--cream-muted)">${p.description}</small>
             </td>
-            <td><span class="badge badge-berry">${p.discount}</span></td>
-            <td>${p.active ? '<span class="badge badge-lime">ATIVA</span>' : 'INATIVA'}</td>
+            <td><span class="status-badge status-ok">${p.discount}</span></td>
+            <td>${p.active ? '<span class="status-badge status-ok">ATIVA</span>' : '<span class="status-badge status-low">INATIVA</span>'}</td>
             <td>
                 <div class="action-btns">
                     <button class="btn btn-sm btn-edit" onclick="togglePromo('${p.id}')">${p.active ? 'Pausar' : 'Ativar'}</button>
                     <button class="btn btn-sm btn-danger" onclick="deletePromo('${p.id}')">Excluir</button>
                 </div>
             </td>
-        `;
-        tbody.appendChild(tr);
-    });
+        </tr>
+    `).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhuma promoção cadastrada</td></tr>';
 }
 
 window.togglePromo = function(id) {
@@ -342,7 +540,7 @@ window.deletePromo = function(id) {
     }
 };
 
-/* --- TAB 3: FOTOS & IMAGENS --- */
+/* --- TAB 5: FOTOS & IMAGENS --- */
 function initPhotosForm() {
     const form = document.getElementById('form-photos');
     if (!form) return;
@@ -365,21 +563,21 @@ function renderPhotosFormValues(photos) {
     if (document.getElementById('photo-banner')) document.getElementById('photo-banner').value = photos.promoBanner || '';
 }
 
-/* --- TAB 4: ADICIONAIS & INGREDIENTES --- */
+/* --- TAB 6: ADICIONAIS & INGREDIENTES --- */
 function initToppingsForm() {
     const form = document.getElementById('form-topping');
     if (!form) return;
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
-        const category = document.getElementById('topping-category').value;
+        const category = document.getElementById('topping-category-select').value;
         const name = document.getElementById('topping-name').value.trim();
         const color = document.getElementById('topping-color').value;
         const icon = document.getElementById('topping-icon').value.trim();
         const isNew = document.getElementById('topping-new').checked;
 
-        if (!name) {
-            alert('Insira o nome do adicional!');
+        if (!name || !icon) {
+            alert('Preencha o nome e o emoji do adicional!');
             return;
         }
 
@@ -391,30 +589,49 @@ function initToppingsForm() {
 }
 
 function renderToppingsTable(toppings) {
-    const container = document.getElementById('admin-toppings-container');
-    if (!container || !toppings) return;
+    renderFilteredToppings();
+}
 
-    let html = '';
-    ['coberturas', 'frutas', 'completamentos'].forEach(cat => {
-        const list = toppings[cat] || [];
-        html += `
-            <div style="margin-bottom: 20px;">
-                <h4 style="color: var(--lime); text-transform: uppercase; margin-bottom: 8px; font-size: 13px;">
-                    ${cat.toUpperCase()} (${list.length})
-                </h4>
-                <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-                    ${list.map(item => `
-                        <div style="background: var(--purple-950); padding: 6px 12px; border-radius: 999px; border: 1px solid var(--glass-border); display: inline-flex; align-items: center; gap: 8px; font-size: 13px;">
-                            <span style="width: 10px; height: 10px; border-radius: 50%; background: ${item.color}; display: inline-block;"></span>
-                            <span>${item.name}</span>
-                            <button onclick="deleteToppingItem('${cat}', '${item.id}')" style="background: none; border: none; color: var(--berry); font-weight: bold; cursor: pointer;">&times;</button>
-                        </div>
-                    `).join('')}
-                </div>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
+function renderFilteredToppings() {
+    const data = window.storeAPI.getData();
+    const select = document.getElementById('topping-category-select');
+    const container = document.getElementById('table-toppings-body');
+    if (!container || !select || !data.toppings) return;
+
+    const cat = select.value;
+    const list = data.toppings[cat] || [];
+
+    container.innerHTML = `
+        <table class="crud-table">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Cor</th>
+                    <th>Ícone</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${list.map(item => `
+                    <tr>
+                        <td>
+                            <strong>${item.name}</strong> 
+                            ${item.isNew ? '<span class="status-badge status-ok" style="padding: 2px 6px; font-size: 10px;">Novo</span>' : ''}
+                        </td>
+                        <td>
+                            <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${item.color}; border:1px solid rgba(255,255,255,0.1)"></span>
+                        </td>
+                        <td>${item.icon || ''}</td>
+                        <td>
+                            <div class="action-btns">
+                                <button class="btn btn-sm btn-danger" onclick="deleteToppingItem('${cat}', '${item.id}')">Excluir</button>
+                            </div>
+                        </td>
+                    </tr>
+                `).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhum item nesta categoria</td></tr>'}
+            </tbody>
+        </table>
+    `;
 }
 
 window.deleteToppingItem = function(cat, id) {
@@ -425,7 +642,7 @@ window.deleteToppingItem = function(cat, id) {
     }
 };
 
-/* --- TAB 5: BAIRROS & TAXAS DE ENTREGA --- */
+/* --- TAB 7: BAIRROS & TAXAS DE ENTREGA --- */
 function initDeliveryForm() {
     const form = document.getElementById('form-delivery');
     if (!form) return;
@@ -457,11 +674,8 @@ function initDeliveryForm() {
 function renderDeliveryTable(locations) {
     const tbody = document.getElementById('table-delivery-body');
     if (!tbody) return;
-    tbody.innerHTML = '';
-
-    locations.forEach(loc => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
+    tbody.innerHTML = locations.map(loc => `
+        <tr>
             <td><strong>${loc.name}</strong></td>
             <td>R$ ${loc.fee.toFixed(2)}</td>
             <td>
@@ -470,9 +684,8 @@ function renderDeliveryTable(locations) {
                     <button class="btn btn-sm btn-danger" onclick="deleteDelivery('${loc.id}')">Excluir</button>
                 </div>
             </td>
-        `;
-        tbody.appendChild(tr);
-    });
+        </tr>
+    `).join('') || '<tr><td colspan="3" style="text-align:center;">Nenhum bairro cadastrado</td></tr>';
 }
 
 window.editDelivery = function(id) {
@@ -493,57 +706,6 @@ window.deleteDelivery = function(id) {
         showToast('Bairro excluído!');
     }
 };
-
-/* --- TAB 1: DASHBOARD --- */
-function initDashboard() {
-    const orderForm = document.getElementById('form-order');
-    if (orderForm) {
-        orderForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const value = parseFloat(document.getElementById('order-value').value);
-            const size = document.getElementById('order-size').value;
-
-            if (isNaN(value) || value <= 0) {
-                alert('Por favor, insira um valor válido.');
-                return;
-            }
-
-            window.storeAPI.saveOrder({
-                value,
-                size,
-                date: new Date().toISOString()
-            });
-
-            orderForm.reset();
-            renderAdminData();
-            showToast('Pedido registrado!');
-        });
-    }
-
-    const expenseForm = document.getElementById('form-expense');
-    if (expenseForm) {
-        expenseForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const description = document.getElementById('expense-desc').value.trim();
-            const value = parseFloat(document.getElementById('expense-value').value);
-
-            if (!description || isNaN(value) || value <= 0) {
-                alert('Por favor, preencha todos os campos corretamente.');
-                return;
-            }
-
-            window.storeAPI.saveExpense({
-                description,
-                value,
-                date: new Date().toISOString()
-            });
-
-            expenseForm.reset();
-            renderAdminData();
-            showToast('Despesa registrada!');
-        });
-    }
-}
 
 function initMobileMenu() {
     const menuToggle = document.getElementById('admin-menu-toggle');

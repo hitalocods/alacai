@@ -15,17 +15,18 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
-    <!-- Admin Modal -->
-    <div class="admin-modal-overlay active" id="admin-modal-overlay">
-        <div class="admin-modal">
+    <!-- Main Dashboard Container -->
+    <div class="admin-dashboard-container" id="admin-modal-overlay">
+        <div class="admin-dashboard">
             <div class="admin-header">
-                <h2>⚙️ Painel de Controle Admin — AL Açaí</h2>
+                <h2>⚙️ Painel de Controle — AL Açaí</h2>
                 <a href="index.html" class="admin-close-btn">← Voltar ao Site</a>
             </div>
 
             <!-- Tab Navigation -->
             <div class="admin-tabs">
                 <button class="admin-tab active" data-tab="tab-dashboard">📊 Dashboard</button>
+                <button class="admin-tab" data-tab="tab-inventory">📦 Estoque</button>
                 <button class="admin-tab" data-tab="tab-prices">🏷️ Preços & Tamanhos</button>
                 <button class="admin-tab" data-tab="tab-promos">🎁 Promoções & Descontos</button>
                 <button class="admin-tab" data-tab="tab-photos">🖼️ Fotos & Imagens</button>
@@ -75,9 +76,10 @@
                     </div>
 
                     <div class="dashboard-sections">
+                        <!-- Registrar Pedido Form -->
                         <div class="dashboard-section">
                             <h3>📝 Registrar Pedido</h3>
-                            <form class="crud-form" id="form-order">
+                            <form class="crud-form" id="form-order" style="background: none; border: none; padding: 0; margin: 0;">
                                 <div class="form-grid">
                                     <div class="form-group">
                                         <label>Valor Total (R$)</label>
@@ -85,120 +87,213 @@
                                     </div>
                                     <div class="form-group">
                                         <label>Tamanho</label>
-                                        <select id="order-size" class="form-control">
-                                            <option value="300 ml">300 ml</option>
-                                            <option value="400 ml">400 ml</option>
-                                            <option value="500 ml">500 ml</option>
-                                            <option value="770 ml">770 ml</option>
+                                        <select id="order-size" class="form-control" required>
+                                            <!-- Loaded dynamically -->
                                         </select>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-solid btn-sm">Registrar Pedido</button>
+                                <div class="form-group" style="margin-top: 12px; margin-bottom: 16px;">
+                                    <label>Adicionais (opcional, para baixa de estoque)</label>
+                                    <div id="order-toppings-list" class="toppings-checklist-box">
+                                        <!-- Loaded dynamically -->
+                                    </div>
+                                </div>
+                                <button type="submit" class="btn btn-solid btn-sm" style="width: 100%;">Registrar Pedido</button>
                             </form>
                         </div>
 
+                        <!-- Registrar Despesa Form -->
                         <div class="dashboard-section">
                             <h3>💸 Registrar Despesa</h3>
-                            <form class="crud-form" id="form-expense">
+                            <form class="crud-form" id="form-expense" style="background: none; border: none; padding: 0; margin: 0;">
                                 <div class="form-grid">
                                     <div class="form-group">
                                         <label>Descrição</label>
-                                        <input type="text" id="expense-desc" class="form-control" placeholder="Ex: Compra de insumos" required>
+                                        <input type="text" id="expense-desc" class="form-control" placeholder="Ex: Compra de morango" required>
                                     </div>
                                     <div class="form-group">
                                         <label>Valor (R$)</label>
                                         <input type="number" step="0.01" id="expense-value" class="form-control" placeholder="50.00" required>
                                     </div>
                                 </div>
-                                <button type="submit" class="btn btn-solid btn-sm">Registrar Despesa</button>
+                                <button type="submit" class="btn btn-solid btn-sm" style="width: 100%; margin-top: 12px;">Registrar Despesa</button>
                             </form>
                         </div>
                     </div>
 
                     <div class="dashboard-tables">
+                        <!-- Tabela de Pedidos -->
                         <div class="dashboard-table-section">
                             <h3>📦 Últimos Pedidos</h3>
-                            <table class="crud-table">
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>Tamanho</th>
-                                        <th>Valor</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-orders-body">
-                                    <!-- Populated dynamically -->
-                                </tbody>
-                            </table>
+                            <div style="overflow-x: auto;">
+                                <table class="crud-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Tamanho</th>
+                                            <th>Valor</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-orders-body">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
 
+                        <!-- Tabela de Despesas -->
                         <div class="dashboard-table-section">
                             <h3>💸 Últimas Despesas</h3>
-                            <table class="crud-table">
-                                <thead>
-                                    <tr>
-                                        <th>Data</th>
-                                        <th>Descrição</th>
-                                        <th>Valor</th>
-                                        <th>Ações</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="table-expenses-body">
-                                    <!-- Populated dynamically -->
-                                </tbody>
-                            </table>
+                            <div style="overflow-x: auto;">
+                                <table class="crud-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Data</th>
+                                            <th>Descrição</th>
+                                            <th>Valor</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-expenses-body">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 2: Preços & Tamanhos -->
-                <div class="admin-tab-content" id="tab-prices">
-                    <form class="crud-form" id="form-price">
-                        <input type="hidden" id="price-id">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Tamanho (ex: 500 ml)</label>
-                                <input type="text" id="price-size" class="form-control" placeholder="500 ml" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Preço Padrão (R$)</label>
-                                <input type="number" step="0.5" id="price-val" class="form-control" placeholder="20.00" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Preço Promocional (opcional)</label>
-                                <input type="number" step="0.5" id="price-promo" class="form-control" placeholder="16.90">
-                            </div>
-                            <div class="form-group">
-                                <label>Badge (opcional)</label>
-                                <input type="text" id="price-badge" class="form-control" placeholder="Mais Pedido">
+                <!-- TAB 2: Estoque -->
+                <div class="admin-tab-content" id="tab-inventory">
+                    <div class="dashboard-stats" style="margin-bottom: 24px;">
+                        <div class="stat-card">
+                            <div class="stat-icon">📦</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Total de Itens</div>
+                                <div class="stat-value" id="inv-stat-total">0</div>
                             </div>
                         </div>
-                        <div class="form-group" style="margin-bottom: 14px;">
-                            <label style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="price-popular"> Marcar como popular
-                            </label>
+                        <div class="stat-card">
+                            <div class="stat-icon">⚠️</div>
+                            <div class="stat-info">
+                                <div class="stat-label">Estoque Crítico</div>
+                                <div class="stat-value" id="inv-stat-alert" style="color: var(--berry);">0</div>
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-solid btn-sm">Salvar Tamanho</button>
-                    </form>
-                    <table class="crud-table">
-                        <thead>
-                            <tr>
-                                <th>Tamanho</th>
-                                <th>Preço Padrão</th>
-                                <th>Preço Promo</th>
-                                <th>Badge</th>
-                                <th>Popular</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-prices-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+                    </div>
+
+                    <div class="inventory-layout">
+                        <!-- Itens Cadastrados Table -->
+                        <div class="dashboard-section list-section">
+                            <h3>📋 Itens Cadastrados</h3>
+                            <div style="overflow-x: auto;">
+                                <table class="crud-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item</th>
+                                            <th>Qtd Atual</th>
+                                            <th>Estoque Mín</th>
+                                            <th>Unidade</th>
+                                            <th>Status</th>
+                                            <th>Ações</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-inventory-body">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Form Cadastrar/Editar Item -->
+                        <div class="dashboard-section form-section">
+                            <h3 id="inventory-form-title">➕ Cadastrar/Editar Item</h3>
+                            <form class="crud-form" id="form-inventory" style="background: none; border: none; padding: 0; margin: 0;">
+                                <input type="hidden" id="inventory-id">
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label>Nome do Item</label>
+                                    <input type="text" id="inventory-name" class="form-control" placeholder="Ex: Copos 500ml" required>
+                                </div>
+                                <div class="form-grid" style="margin-bottom: 12px;">
+                                    <div class="form-group">
+                                        <label>Qtd Atual</label>
+                                        <input type="number" step="0.1" id="inventory-qty" class="form-control" placeholder="150" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Qtd Mínima</label>
+                                        <input type="number" step="0.1" id="inventory-min-qty" class="form-control" placeholder="20" required>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label>Unidade de Medida</label>
+                                    <input type="text" id="inventory-unit" class="form-control" placeholder="unidades, potes, kg, etc." required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label>Vincular ao Cardápio (Dedução Automática)</label>
+                                    <select id="inventory-link" class="form-control">
+                                        <option value="">Nenhum vínculo</option>
+                                        <!-- Loaded dynamically -->
+                                    </select>
+                                    <p style="font-size: 11px; color: var(--cream-muted); margin-top: 4px;">
+                                        Quando o item vinculado for vendido, a quantidade será deduzida automaticamente do estoque.
+                                    </p>
+                                </div>
+                                <button type="submit" class="btn btn-solid btn-sm" style="width: 100%;">Salvar Item</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- TAB 3: Promoções -->
+                <!-- TAB 3: Preços & Tamanhos -->
+                <div class="admin-tab-content" id="tab-prices">
+                    <div class="inventory-layout">
+                        <div class="dashboard-section list-section">
+                            <h3>🏷️ Tamanhos Cadastrados</h3>
+                            <table class="crud-table">
+                                <thead>
+                                    <tr>
+                                        <th>Tamanho</th>
+                                        <th>Preço Padrão</th>
+                                        <th>Preço Promo</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-prices-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <div class="dashboard-section form-section">
+                            <h3>🏷️ Salvar Preço</h3>
+                            <form class="crud-form" id="form-price" style="background: none; border: none; padding: 0; margin: 0;">
+                                <input type="hidden" id="price-id">
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label>Tamanho (ex: 500 ml)</label>
+                                    <input type="text" id="price-size" class="form-control" placeholder="500 ml" required>
+                                </div>
+                                <div class="form-grid" style="margin-bottom: 12px;">
+                                    <div class="form-group">
+                                        <label>Preço Padrão (R$)</label>
+                                        <input type="number" step="0.5" id="price-val" class="form-control" placeholder="20.00" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Preço Promo (R$)</label>
+                                        <input type="number" step="0.5" id="price-promo-val" class="form-control" placeholder="16.90">
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label>Badge (opcional)</label>
+                                    <input type="text" id="price-badge" class="form-control" placeholder="Ex: Mais Pedido">
+                                </div>
+                                <button type="submit" class="btn btn-solid btn-sm" style="width: 100%; margin-top: 10px;">Salvar Tamanho</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 4: Promoções -->
                 <div class="admin-tab-content" id="tab-promos">
                     <form class="crud-form" id="form-promo">
                         <input type="hidden" id="promo-id">
@@ -222,17 +317,13 @@
                             <div class="form-group">
                                 <label>Tamanho Alvo</label>
                                 <select id="promo-target" class="form-control" required>
-                                    <option value="">Selecione...</option>
-                                    <option value="300 ml">300 ml</option>
-                                    <option value="400 ml">400 ml</option>
-                                    <option value="500 ml">500 ml</option>
-                                    <option value="770 ml">770 ml</option>
+                                    <!-- Loaded dynamically -->
                                 </select>
                             </div>
                         </div>
                         <div class="form-group" style="margin-bottom: 14px;">
                             <label style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="promo-active"> Promoção ativa
+                                <input type="checkbox" id="promo-active"> Promoção activa
                             </label>
                         </div>
                         <button type="submit" class="btn btn-solid btn-sm">Salvar Promoção</button>
@@ -254,18 +345,18 @@
                     </table>
                 </div>
 
-                <!-- TAB 4: Fotos -->
+                <!-- TAB 5: Fotos -->
                 <div class="admin-tab-content" id="tab-photos">
                     <form class="crud-form" id="form-photos">
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 12px;">
                             <label>URL da Foto Hero (copo principal)</label>
                             <input type="url" id="photo-hero" class="form-control" placeholder="https://...">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 12px;">
                             <label>URL da Logo</label>
                             <input type="url" id="photo-logo" class="form-control" placeholder="https://...">
                         </div>
-                        <div class="form-group">
+                        <div class="form-group" style="margin-bottom: 18px;">
                             <label>URL do Banner de Promoção</label>
                             <input type="url" id="photo-banner" class="form-control" placeholder="https://...">
                         </div>
@@ -273,89 +364,93 @@
                     </form>
                 </div>
 
-                <!-- TAB 5: Adicionais -->
+                <!-- TAB 6: Adicionais -->
                 <div class="admin-tab-content" id="tab-toppings">
-                    <div style="margin-bottom: 20px;">
-                        <label style="font-weight: 700; color: var(--cream-muted); margin-bottom: 8px; display: block;">Selecione a Categoria:</label>
-                        <select id="topping-category-select" class="form-control" style="width: 100%; max-width: 300px;">
-                            <option value="coberturas">Coberturas</option>
-                            <option value="frutas">Frutas</option>
-                            <option value="completamentos">Completamentos</option>
-                        </select>
+                    <div class="inventory-layout">
+                        <div class="dashboard-section list-section">
+                            <div style="margin-bottom: 20px;">
+                                <label style="font-weight: 700; color: var(--cream-muted); margin-bottom: 8px; display: block;">Filtrar Categoria:</label>
+                                <select id="topping-category-select" class="form-control" style="width: 100%; max-width: 300px;">
+                                    <option value="coberturas">Coberturas</option>
+                                    <option value="frutas">Frutas</option>
+                                    <option value="completamentos">Completamentos</option>
+                                </select>
+                            </div>
+                            <div id="table-toppings-body">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+
+                        <div class="dashboard-section form-section">
+                            <h3>🍧 Salvar Adicional</h3>
+                            <form class="crud-form" id="form-topping" style="background: none; border: none; padding: 0; margin: 0;">
+                                <input type="hidden" id="topping-id">
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label>Nome do Adicional</label>
+                                    <input type="text" id="topping-name" class="form-control" placeholder="Ex: M&M" required>
+                                </div>
+                                <div class="form-grid" style="margin-bottom: 12px;">
+                                    <div class="form-group">
+                                        <label>Cor (hex)</label>
+                                        <input type="color" id="topping-color" class="form-control" value="#6B3B1F" style="height: 42px; padding: 2px;">
+                                    </div>
+                                    <div class="form-group">
+                                        <label>Ícone/Emoji</label>
+                                        <input type="text" id="topping-icon" class="form-control" placeholder="🍬" maxlength="2" required>
+                                    </div>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 14px;">
+                                    <label style="display: flex; align-items: center; gap: 8px;">
+                                        <input type="checkbox" id="topping-new"> Marcar como Novo
+                                    </label>
+                                </div>
+                                <button type="submit" class="btn btn-solid btn-sm" style="width: 100%;">Salvar Adicional</button>
+                            </form>
+                        </div>
                     </div>
-                    <form class="crud-form" id="form-topping">
-                        <input type="hidden" id="topping-id">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Nome do Adicional</label>
-                                <input type="text" id="topping-name" class="form-control" placeholder="Ex: Nutella" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Cor (hex)</label>
-                                <input type="color" id="topping-color" class="form-control" value="#6B3B1F" style="height: 42px;">
-                            </div>
-                            <div class="form-group">
-                                <label>Ícone/Emoji</label>
-                                <input type="text" id="topping-icon" class="form-control" placeholder="🍫" maxlength="2">
-                            </div>
-                        </div>
-                        <div class="form-group" style="margin-bottom: 14px;">
-                            <label style="display: flex; align-items: center; gap: 8px;">
-                                <input type="checkbox" id="topping-new"> Marcar como Novo
-                            </label>
-                        </div>
-                        <button type="submit" class="btn btn-solid btn-sm">Salvar Adicional</button>
-                    </form>
-                    <table class="crud-table">
-                        <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>Cor</th>
-                                <th>Ícone</th>
-                                <th>Novo</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-toppings-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
                 </div>
 
-                <!-- TAB 6: Bairros & Taxas -->
+                <!-- TAB 7: Bairros & Taxas -->
                 <div class="admin-tab-content" id="tab-delivery">
-                    <form class="crud-form" id="form-delivery">
-                        <input type="hidden" id="delivery-id">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label>Nome do Bairro</label>
-                                <input type="text" id="delivery-name" class="form-control" placeholder="Ex: Centro" required>
-                            </div>
-                            <div class="form-group">
-                                <label>Taxa de Entrega (R$)</label>
-                                <input type="number" step="0.5" id="delivery-fee" class="form-control" placeholder="5.00" required>
-                            </div>
+                    <div class="inventory-layout">
+                        <div class="dashboard-section list-section">
+                            <h3>🛵 Bairros de Entrega</h3>
+                            <table class="crud-table">
+                                <thead>
+                                    <tr>
+                                        <th>Bairro</th>
+                                        <th>Taxa (R$)</th>
+                                        <th>Ações</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="table-delivery-body">
+                                    <!-- Populated dynamically -->
+                                </tbody>
+                            </table>
                         </div>
-                        <button type="submit" class="btn btn-solid btn-sm">Salvar Bairro</button>
-                    </form>
-                    <table class="crud-table">
-                        <thead>
-                            <tr>
-                                <th>Bairro</th>
-                                <th>Taxa (R$)</th>
-                                <th>Ações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-delivery-body">
-                            <!-- Populated dynamically -->
-                        </tbody>
-                    </table>
+
+                        <div class="dashboard-section form-section">
+                            <h3>🛵 Adicionar Bairro</h3>
+                            <form class="crud-form" id="form-delivery" style="background: none; border: none; padding: 0; margin: 0;">
+                                <input type="hidden" id="delivery-id">
+                                <div class="form-group" style="margin-bottom: 12px;">
+                                    <label>Nome do Bairro</label>
+                                    <input type="text" id="delivery-name" class="form-control" placeholder="Ex: Cabral" required>
+                                </div>
+                                <div class="form-group" style="margin-bottom: 18px;">
+                                    <label>Taxa de Entrega (R$)</label>
+                                    <input type="number" step="0.5" id="delivery-fee" class="form-control" placeholder="5.00" required>
+                                </div>
+                                <button type="submit" class="btn btn-solid btn-sm" style="width: 100%;">Salvar Bairro</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="admin-footer">
                 <div style="font-size: 13px; color: var(--cream-muted);">
-                    Dados salvos automaticamente
+                    Alterações salvas e sincronizadas automaticamente
                 </div>
                 <button class="btn btn-sm btn-danger" id="admin-reset-data">Restaurar Dados Padrão</button>
             </div>

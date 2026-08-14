@@ -88,7 +88,16 @@ const DEFAULT_DATA = {
             { id: "comp-12", name: "Gota de chocolate", color: "#2E1810", icon: "🍫" },
             { id: "comp-13", name: "Tubinho", color: "#FF6F86", icon: "🍦", isNew: true }
         ]
-    }
+    },
+    inventory: [
+        { id: "inv-size-300", name: "Copo 300 ml (unidades)", qty: 150, minQty: 20, unit: "unidades", linkedItem: "size-300" },
+        { id: "inv-size-400", name: "Copo 400 ml (unidades)", qty: 120, minQty: 20, unit: "unidades", linkedItem: "size-400" },
+        { id: "inv-size-500", name: "Copo 500 ml (unidades)", qty: 200, minQty: 30, unit: "unidades", linkedItem: "size-500" },
+        { id: "inv-size-770", name: "Copo 770 ml (unidades)", qty: 80, minQty: 15, unit: "unidades", linkedItem: "size-770" },
+        { id: "inv-nutella", name: "Nutella (Potes)", qty: 12, minQty: 3, unit: "potes", linkedItem: "comp-3" },
+        { id: "inv-leite-po", name: "Leite em pó (kg)", qty: 10, minQty: 2, unit: "kg", linkedItem: "comp-7" },
+        { id: "inv-morango", name: "Morango (Bandejas)", qty: 25, minQty: 5, unit: "bandejas", linkedItem: "fru-1" }
+    ]
 };
 
 class StoreAPI {
@@ -103,7 +112,7 @@ class StoreAPI {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
                 const parsed = JSON.parse(stored);
-                return { ...DEFAULT_DATA, ...parsed };
+                return { ...DEFAULT_DATA, ...parsed, inventory: parsed.inventory || DEFAULT_DATA.inventory };
             }
         } catch (e) {
             console.warn('Erro ao carregar localStorage, usando dados padrão:', e);
@@ -129,8 +138,8 @@ class StoreAPI {
             if (res.ok) {
                 const remoteData = await res.json();
                 if (remoteData && remoteData.sizes) {
-                    this.data = remoteData;
-                    localStorage.setItem(STORAGE_KEY, JSON.stringify(remoteData));
+                    this.data = { ...DEFAULT_DATA, ...remoteData, inventory: remoteData.inventory || DEFAULT_DATA.inventory };
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
                     this.notify();
                 }
             }
@@ -280,7 +289,42 @@ class StoreAPI {
         if (!orderObj.id) orderObj.id = 'order-' + Date.now();
 
         orders.push(orderObj);
-        const newData = { ...this.data, orders };
+
+        // Decrement Stock
+        let inventory = [...(this.data.inventory || [])];
+        
+        // 1. Decrement Cup size
+        const sizeObj = this.data.sizes.find(s => s.size === orderObj.size);
+        if (sizeObj) {
+            inventory = inventory.map(item => {
+                if (item.linkedItem === sizeObj.id) {
+                    return { ...item, qty: Math.max(0, item.qty - 1) };
+                }
+                return item;
+            });
+        }
+
+        // 2. Decrement Toppings
+        if (orderObj.toppings && Array.isArray(orderObj.toppings)) {
+            const allToppingsList = [
+                ...(this.data.toppings.coberturas || []),
+                ...(this.data.toppings.frutas || []),
+                ...(this.data.toppings.completamentos || [])
+            ];
+            orderObj.toppings.forEach(toppingName => {
+                const topping = allToppingsList.find(t => t.name === toppingName);
+                if (topping) {
+                    inventory = inventory.map(item => {
+                        if (item.linkedItem === topping.id) {
+                            return { ...item, qty: Math.max(0, item.qty - 1) };
+                        }
+                        return item;
+                    });
+                }
+            });
+        }
+
+        const newData = { ...this.data, orders, inventory };
         this.saveLocalData(newData);
         return orderObj;
     }
@@ -305,6 +349,29 @@ class StoreAPI {
     deleteExpense(id) {
         const expenses = this.data.expenses.filter(e => e.id !== id);
         const newData = { ...this.data, expenses };
+        this.saveLocalData(newData);
+    }
+
+    // CRUD: Inventory
+    saveInventoryItem(itemObj) {
+        const inventory = [...(this.data.inventory || [])];
+        if (!itemObj.id) itemObj.id = 'inv-' + Date.now();
+
+        const idx = inventory.findIndex(i => i.id === itemObj.id);
+        if (idx >= 0) {
+            inventory[idx] = { ...inventory[idx], ...itemObj };
+        } else {
+            inventory.push(itemObj);
+        }
+
+        const newData = { ...this.data, inventory };
+        this.saveLocalData(newData);
+        return itemObj;
+    }
+
+    deleteInventoryItem(id) {
+        const inventory = (this.data.inventory || []).filter(i => i.id !== id);
+        const newData = { ...this.data, inventory };
         this.saveLocalData(newData);
     }
 

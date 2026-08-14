@@ -281,5 +281,63 @@
       "fee": 7,
       "name": "Vera Cruz"
     }
+  ],
+  "inventory": [
+    {
+      "id": "inv-size-300",
+      "name": "Copo 300 ml (unidades)",
+      "qty": 150,
+      "minQty": 20,
+      "unit": "unidades",
+      "linkedItem": "size-300"
+    },
+    {
+      "id": "inv-size-400",
+      "name": "Copo 400 ml (unidades)",
+      "qty": 120,
+      "minQty": 20,
+      "unit": "unidades",
+      "linkedItem": "size-400"
+    },
+    {
+      "id": "inv-size-500",
+      "name": "Copo 500 ml (unidades)",
+      "qty": 200,
+      "minQty": 30,
+      "unit": "unidades",
+      "linkedItem": "size-500"
+    },
+    {
+      "id": "inv-size-770",
+      "name": "Copo 770 ml (unidades)",
+      "qty": 80,
+      "minQty": 15,
+      "unit": "unidades",
+      "linkedItem": "size-770"
+    },
+    {
+      "id": "inv-nutella",
+      "name": "Nutella (Potes)",
+      "qty": 12,
+      "minQty": 3,
+      "unit": "potes",
+      "linkedItem": "comp-3"
+    },
+    {
+      "id": "inv-leite-po",
+      "name": "Leite em pó (kg)",
+      "qty": 10,
+      "minQty": 2,
+      "unit": "kg",
+      "linkedItem": "comp-7"
+    },
+    {
+      "id": "inv-morango",
+      "name": "Morango (Bandejas)",
+      "qty": 25,
+      "minQty": 5,
+      "unit": "bandejas",
+      "linkedItem": "fru-1"
+    }
   ]
 }
