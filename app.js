@@ -316,28 +316,60 @@ function sendWhatsAppOrder() {
     const deliveryFee = deliveryLocation ? deliveryLocation.fee : 0;
     const total = basePrice + extraTotal + deliveryFee;
 
-    let msg = `✨ *Novo Pedido - AL Açaí* ✨%0A%0A`;
-    msg += `🥤 *Tamanho:* ${currentSelectedSize} (R$ ${basePrice.toFixed(2).replace('.', ',')})%0A`;
-    
+    const paymentIcons = {
+        'Pix': '⚡ Pix',
+        'Cartão de Crédito': '💳 Cartão de Crédito',
+        'Cartão de Débito': '💳 Cartão de Débito',
+        'Dinheiro': '💵 Dinheiro'
+    };
+    const paymentFormatted = paymentIcons[pagamento] || `💳 ${pagamento}`;
+
+    const deliveryFeeFormatted = deliveryFee > 0 
+        ? `R$ ${deliveryFee.toFixed(2).replace('.', ',')}` 
+        : 'Grátis';
+
+    const lines = [
+        `🟣 *AL AÇAÍ • NOVO PEDIDO* 🟣`,
+        `━━━━━━━━━━━━━━━━━━━━`,
+        ``,
+        `🥤 *TAMANHO DO COPO*`,
+        `▫️ ${currentSelectedSize} (R$ ${basePrice.toFixed(2).replace('.', ',')})`,
+        ``,
+        `🍧 *ADICIONAIS (${selectedAdicionais.length})*`
+    ];
+
     if (selectedAdicionais.length > 0) {
-        msg += `🍧 *Adicionais (${selectedAdicionais.length}):*%0A - ${selectedAdicionais.join('%0A - ')}%0A`;
+        selectedAdicionais.forEach(ad => {
+            lines.push(`▫️ ${ad}`);
+        });
     } else {
-        msg += `🍧 *Adicionais:* Nenhum%0A`;
+        lines.push(`▫️ _Nenhum adicional selecionado_`);
     }
 
     if (extraCount > 0) {
-        msg += `⚠️ *Adicionais Extras:* ${extraCount} (+R$ ${ (extraCount * EXTRA_PRICE).toFixed(2).replace('.', ',') })%0A`;
+        lines.push(``);
+        lines.push(`⚠️ *Adicionais Extras:* ${extraCount}x (+R$ ${(extraCount * EXTRA_PRICE).toFixed(2).replace('.', ',')})`);
     }
 
     if (obs) {
-        msg += `📝 *Observação:* ${encodeURIComponent(obs)}%0A`;
+        lines.push(``);
+        lines.push(`📝 *Observação:*`);
+        lines.push(`_${obs}_`);
     }
 
-    msg += `%0A🏠 *Endereço:* ${encodeURIComponent(endereco)}%0A`;
-    msg += `📍 *Bairro:* ${deliveryLocation ? deliveryLocation.name : 'Não informado'}%0A`;
-    msg += `🛵 *Taxa de Entrega:* R$ ${deliveryFee.toFixed(2).replace('.', ',')}%0A`;
-    msg += `💳 *Forma de Pagamento:* ${pagamento}%0A`;
-    msg += `%0A💰 *Total:* R$ ${total.toFixed(2).replace('.', ',')}`;
+    lines.push(``);
+    lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+    lines.push(`🛵 *DADOS PARA ENTREGA*`);
+    lines.push(`▫️ *Endereço:* ${endereco}`);
+    lines.push(`▫️ *Bairro:* ${deliveryLocation ? deliveryLocation.name : 'Não informado'}`);
+    lines.push(`▫️ *Taxa de Entrega:* ${deliveryFeeFormatted}`);
+    lines.push(`▫️ *Pagamento:* ${paymentFormatted}`);
+    lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+    lines.push(`💰 *VALOR TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*`);
+    lines.push(`━━━━━━━━━━━━━━━━━━━━`);
+    lines.push(`_Aguardando confirmação..._ 💜`);
+
+    const fullMessage = lines.join('\n');
 
     // Salva o pedido para registrar estatísticas e dar baixa no estoque
     try {
@@ -352,5 +384,5 @@ function sendWhatsAppOrder() {
     }
 
     closeCustomizer();
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${msg}`, '_blank');
+    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(fullMessage)}`, '_blank');
 }
