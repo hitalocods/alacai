@@ -150,6 +150,17 @@ async function writeData(data) {
     return success;
 }
 
+// POST verify password
+app.post('/api/verify-password', (req, res) => {
+    const { password } = req.body;
+    const expectedPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    if (password === expectedPassword) {
+        res.json({ success: true });
+    } else {
+        res.status(401).json({ success: false, error: 'Senha incorreta!' });
+    }
+});
+
 // GET entire store state
 app.get('/api/data', async (req, res) => {
     const data = await readData();

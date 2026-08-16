@@ -3,8 +3,96 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    initAdminPanel();
+    checkAuthentication();
 });
+
+function checkAuthentication() {
+    const isAuth = sessionStorage.getItem('admin_authenticated') === 'true';
+    const overlay = document.getElementById('admin-login-overlay');
+    if (isAuth) {
+        if (overlay) overlay.style.display = 'none';
+        initAdminPanel();
+    } else {
+        if (overlay) overlay.style.display = 'flex';
+        initLoginHandler();
+    }
+}
+
+function initLoginHandler() {
+    const form = document.getElementById('form-admin-login');
+    const input = document.getElementById('admin-password-input');
+    const errorMsg = document.getElementById('login-error-msg');
+
+    if (!form) return;
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const password = input.value;
+
+        try {
+            // Tenta verificar com o servidor
+            const response = await fetch('/api/verify-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ password })
+            });
+
+            if (response.status === 401) {
+                // Senha incorreta explícita do servidor
+                const errResult = await response.json().catch(() => ({}));
+                if (errorMsg) {
+                    errorMsg.textContent = errResult.error || 'Senha incorreta!';
+                    errorMsg.style.display = 'block';
+                }
+                return;
+            }
+
+            if (response.ok) {
+                const result = await response.json(); // Se não for JSON (ex: HTML de erro redirecionado), joga erro para o catch
+                if (result && result.success) {
+                    sessionStorage.setItem('admin_authenticated', 'true');
+                    const overlay = document.getElementById('admin-login-overlay');
+                    if (overlay) {
+                        overlay.style.opacity = '0';
+                        setTimeout(() => {
+                            overlay.style.display = 'none';
+                            initAdminPanel();
+                        }, 300);
+                    } else {
+                        initAdminPanel();
+                    }
+                    return;
+                }
+            }
+
+            // Se for 404, 500, ou qualquer outra resposta não tratada, cai no catch para tentar localmente
+            throw new Error('Servidor indisponível ou rota não existe');
+
+        } catch (err) {
+            // Fallback para modo estático se o servidor não responder ou não existir (ex: 404)
+            const defaultPassword = 'admin123';
+            if (password === defaultPassword) {
+                sessionStorage.setItem('admin_authenticated', 'true');
+                const overlay = document.getElementById('admin-login-overlay');
+                if (overlay) {
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.style.display = 'none';
+                        initAdminPanel();
+                    }, 300);
+                } else {
+                    initAdminPanel();
+                }
+                return;
+            }
+        }
+
+        if (errorMsg) {
+            errorMsg.textContent = 'Senha incorreta!';
+            errorMsg.style.display = 'block';
+        }
+    });
+}
 
 function showToast(msg) {
     let toast = document.getElementById('admin-toast');

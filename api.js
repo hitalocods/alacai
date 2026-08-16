@@ -108,6 +108,7 @@ class StoreAPI {
         try {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored) {
+                const parsed = JSON.parse(stored);
                 let needsSave = false;
                 const mergedPhotos = {};
                 for (const key in DEFAULT_DATA.photos) {
@@ -131,7 +132,6 @@ class StoreAPI {
         } catch (e) {
             console.warn('Erro ao carregar localStorage, usando dados padrão:', e);
         }
-        this.saveLocalData(DEFAULT_DATA);
         return { ...DEFAULT_DATA };
     }
 
