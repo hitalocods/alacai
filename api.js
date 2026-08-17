@@ -9,17 +9,17 @@ const DEFAULT_DATA = {
     sizes: [
         { id: "size-300", size: "300 ml", price: 14, promoPrice: null, popular: false, photo: "acai.jpg" },
         { id: "size-400", size: "400 ml", price: 17, promoPrice: null, popular: false, photo: "acai.jpg" },
-        { id: "size-500", size: "500 ml", price: 20, promoPrice: 16.90, popular: true, badge: "Mais Pedido · 15% OFF", photo: "acai.jpg" },
+        { id: "size-500", size: "500 ml", price: 20, promoPrice: null, popular: true, badge: "Mais Pedido", photo: "acai.jpg" },
         { id: "size-770", size: "770 ml", price: 27, promoPrice: null, popular: false, photo: "acai.jpg" }
     ],
     promotions: [
         {
             id: "promo-1",
-            title: "Super Promoção 500ml",
-            description: "Leve o copo de 500ml de R$ 20 por apenas R$ 16,90 com 7 adicionais inclusos!",
-            discount: "15% OFF",
-            active: true,
-            badge: "OFERTA DO DIA",
+            title: "Açaí 500ml",
+            description: "Copo de 500ml por R$ 20,00 com 7 adicionais inclusos!",
+            discount: "DESTAQUE",
+            active: false,
+            badge: "MAIS PEDIDO",
             targetSize: "500 ml"
         },
         {

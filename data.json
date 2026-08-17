@@ -19,11 +19,11 @@
     {
       "id": "size-500",
       "size": "500 ml",
-      "badge": "Mais Pedido · 15% OFF",
+      "badge": "Mais Pedido",
       "photo": "acai.jpg",
       "price": 20,
       "popular": true,
-      "promoPrice": 16.9
+      "promoPrice": null
     },
     {
       "id": "size-770",
@@ -37,12 +37,12 @@
   "promotions": [
     {
       "id": "promo-1",
-      "badge": "OFERTA DO DIA",
-      "title": "Super Promoção 500ml",
-      "active": true,
-      "discount": "15% OFF",
+      "badge": "MAIS PEDIDO",
+      "title": "Açaí 500ml",
+      "active": false,
+      "discount": "DESTAQUE",
       "targetSize": "500 ml",
-      "description": "Leve o copo de 500ml de R$ 20 por apenas R$ 16,90 com 7 adicionais inclusos!"
+      "description": "Copo de 500ml por R$ 20,00 com 7 adicionais inclusos!"
     },
     {
       "id": "promo-2",
