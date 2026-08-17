@@ -609,11 +609,20 @@ function initPriceForm() {
         const promoPriceVal = document.getElementById('price-promo-val').value;
         const promoPrice = promoPriceVal ? parseFloat(promoPriceVal) : null;
         const badge = document.getElementById('price-badge').value.trim();
-        const photo = document.getElementById('price-photo').value.trim() || 'acai.jpg';
 
         if (!size || isNaN(price)) {
             alert('Preencha o tamanho e o preço corretamente!');
             return;
+        }
+
+        // Mantém a foto existente se for edição, ou usa a padrão acai.jpg
+        let photo = 'acai.jpg';
+        if (id) {
+            const data = window.storeAPI.getData();
+            const existing = data.sizes && data.sizes.find(s => s.id === id);
+            if (existing && existing.photo) {
+                photo = existing.photo;
+            }
         }
 
         window.storeAPI.savePrice({
@@ -664,7 +673,6 @@ window.editPrice = function(id) {
     document.getElementById('price-val').value = sizeObj.price;
     document.getElementById('price-promo-val').value = sizeObj.promoPrice || '';
     document.getElementById('price-badge').value = sizeObj.badge || '';
-    document.getElementById('price-photo').value = sizeObj.photo || '';
     showToast(`Editando ${sizeObj.size}`);
 };
 
