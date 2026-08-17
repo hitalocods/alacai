@@ -3,7 +3,7 @@
  * Gerencia persistência local (localStorage) e sincronização com a API REST
  */
 
-const STORAGE_KEY = 'al_acai_store_v2';
+const STORAGE_KEY = 'al_acai_store_v3';
 
 const DEFAULT_DATA = {
     sizes: [
