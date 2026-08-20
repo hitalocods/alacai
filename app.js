@@ -5,6 +5,49 @@
 const WHATSAPP_NUMBER = "5586999128202";
 let currentSelectedSize = '';
 
+// Preços fixos promocionais da Quinta Maluca
+const QUINTA_MALUCA_PRICES = {
+    '300 ml': 12,
+    '400 ml': 15,
+    '500 ml': 18,
+    '770 ml': 25
+};
+
+function isQuintaMaluca() {
+    // Retorna true se hoje for quinta-feira (getDay() === 4)
+    return new Date().getDay() === 4;
+}
+
+function getEffectiveSizePrice(sizeObj) {
+    if (!sizeObj) return { basePrice: 0, originalPrice: 0, isPromo: false, promoLabel: '' };
+
+    const isThu = isQuintaMaluca();
+    if (isThu && QUINTA_MALUCA_PRICES[sizeObj.size] !== undefined) {
+        return {
+            basePrice: QUINTA_MALUCA_PRICES[sizeObj.size],
+            originalPrice: sizeObj.price,
+            isPromo: true,
+            promoLabel: 'Quinta Maluca'
+        };
+    }
+
+    if (sizeObj.promoPrice !== null && sizeObj.promoPrice !== undefined && sizeObj.promoPrice < sizeObj.price) {
+        return {
+            basePrice: sizeObj.promoPrice,
+            originalPrice: sizeObj.price,
+            isPromo: true,
+            promoLabel: 'Promoção'
+        };
+    }
+
+    return {
+        basePrice: sizeObj.price,
+        originalPrice: sizeObj.price,
+        isPromo: false,
+        promoLabel: ''
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initApp();
 });
@@ -41,20 +84,43 @@ function initApp() {
 }
 
 function renderUI(data) {
+    renderQuintaMalucaBanner();
     renderCoposGrid(data.sizes, data.photos);
     renderBuilderOptions(data.toppings);
     renderDeliveryOptions(data.deliveryLocations);
     updateOrderSummary();
 }
 
+function renderQuintaMalucaBanner() {
+    const bannerContainer = document.getElementById('quinta-maluca-banner-container');
+    if (!bannerContainer) return;
+
+    if (isQuintaMaluca()) {
+        bannerContainer.innerHTML = `
+            <div class="quinta-maluca-banner">
+                <div class="qmb-glow"></div>
+                <div class="qmb-content">
+                    <div class="qmb-badge">🔥 HOJE É QUINTA MALUCA! 🔥</div>
+                    <div class="qmb-title">Preços Especiais em Todos os Copos</div>
+                    <div class="qmb-desc">300ml por R$ 12,00 • 400ml por R$ 15,00 • 500ml por R$ 18,00 • 770ml por R$ 25,00</div>
+                </div>
+            </div>
+        `;
+        bannerContainer.style.display = 'block';
+    } else {
+        bannerContainer.innerHTML = '';
+        bannerContainer.style.display = 'none';
+    }
+}
+
 function renderCoposGrid(sizes, photos) {
     const coposGrid = document.getElementById('copos-grid');
     if (!coposGrid || !sizes) return;
 
-    coposGrid.innerHTML = sizes.map(s => {
-        const hasPromo = s.promoPrice !== null && s.promoPrice !== undefined && s.promoPrice < s.price;
-        const currentPrice = hasPromo ? s.promoPrice : s.price;
+    const isThu = isQuintaMaluca();
 
+    coposGrid.innerHTML = sizes.map(s => {
+        const priceInfo = getEffectiveSizePrice(s);
         const photoUrl = s.photo || '';
         
         let imgHtml = '';
@@ -71,16 +137,41 @@ function renderCoposGrid(sizes, photos) {
             `;
         }
 
+        // Badge determination
+        let badgeHtml = '';
+        if (isThu && QUINTA_MALUCA_PRICES[s.size] !== undefined) {
+            badgeHtml = `<div class="badge-card badge-quinta-maluca">🔥 Quinta Maluca</div>`;
+        } else if (s.badge) {
+            badgeHtml = `<div class="badge-card">${s.badge}</div>`;
+        }
+
+        // Price formatting with strikethrough if promo
+        let priceHtml = '';
+        if (priceInfo.isPromo) {
+            priceHtml = `
+                <div class="copo-price-wrap">
+                    <span class="old-price">R$ ${priceInfo.originalPrice.toFixed(2).replace('.', ',')}</span>
+                    <span class="price promo-price">R$ ${priceInfo.basePrice.toFixed(2).replace('.', ',')}</span>
+                </div>
+            `;
+        } else {
+            priceHtml = `
+                <div class="copo-price-wrap">
+                    <span class="price">R$ ${priceInfo.basePrice.toFixed(2).replace('.', ',')}</span>
+                </div>
+            `;
+        }
+
         return `
-            <div class="copo-card" onclick="openCustomizer('${s.size}')">
-                ${s.badge ? `<div class="badge-card">${s.badge}</div>` : ''}
+            <div class="copo-card ${priceInfo.isPromo ? 'promo-active' : ''}" onclick="openCustomizer('${s.size}')">
+                ${badgeHtml}
                 <div class="copo-card-top">
                     <div class="copo-img-wrapper">
                         ${imgHtml}
                     </div>
                     <div class="copo-details">
                         <h3>Açaí ${s.size}</h3>
-                        <div class="price">R$ ${currentPrice.toFixed(2).replace('.', ',')}</div>
+                        ${priceHtml}
                     </div>
                 </div>
                 <div class="copo-card-bottom">
@@ -97,8 +188,18 @@ window.openCustomizer = function(size) {
     const modal = document.getElementById('customizer-modal');
     if (modal) modal.classList.add('active');
 
+    const store = window.storeAPI.getData();
+    const sizeObj = store.sizes ? store.sizes.find(s => s.size === size) : null;
+    const priceInfo = getEffectiveSizePrice(sizeObj);
+
     const modalTitle = document.getElementById('modal-selected-size');
-    if (modalTitle) modalTitle.textContent = `Açaí ${size}`;
+    if (modalTitle) {
+        if (priceInfo.isPromo) {
+            modalTitle.innerHTML = `Açaí ${size} <span class="modal-promo-tag">(${priceInfo.promoLabel} - R$ ${priceInfo.basePrice.toFixed(2).replace('.', ',')})</span>`;
+        } else {
+            modalTitle.textContent = `Açaí ${size}`;
+        }
+    }
 
     // Reset inputs inside modal
     document.querySelectorAll('.adicional').forEach(el => el.checked = false);
@@ -186,8 +287,8 @@ function updateOrderSummary() {
     const EXTRA_PRICE = store.extraPrice || 1.0;
 
     const sizeObj = store.sizes.find(s => s.size === currentSelectedSize);
-    const hasPromo = sizeObj && sizeObj.promoPrice !== null && sizeObj.promoPrice !== undefined && sizeObj.promoPrice < sizeObj.price;
-    const basePrice = sizeObj ? (hasPromo ? sizeObj.promoPrice : sizeObj.price) : 0;
+    const priceInfo = getEffectiveSizePrice(sizeObj);
+    const basePrice = priceInfo.basePrice;
 
     const selectedAdicionais = Array.from(document.querySelectorAll('.adicional:checked'));
     const totalSelected = selectedAdicionais.length;
@@ -208,7 +309,14 @@ function updateOrderSummary() {
         summaryList.innerHTML = '';
         if (sizeObj) {
             const li = document.createElement('li');
-            li.innerHTML = `<span>Açaí ${sizeObj.size}</span><span>R$ ${basePrice.toFixed(2).replace('.', ',')}</span>`;
+            if (priceInfo.isPromo) {
+                li.innerHTML = `
+                    <span>Açaí ${sizeObj.size} <small class="summary-promo-badge">(${priceInfo.promoLabel})</small></span>
+                    <span><s class="summary-old-price">R$ ${priceInfo.originalPrice.toFixed(2).replace('.', ',')}</s> <strong>R$ ${priceInfo.basePrice.toFixed(2).replace('.', ',')}</strong></span>
+                `;
+            } else {
+                li.innerHTML = `<span>Açaí ${sizeObj.size}</span><span>R$ ${basePrice.toFixed(2).replace('.', ',')}</span>`;
+            }
             summaryList.appendChild(li);
         }
         if (selectedAdicionais.length > 0) {
@@ -309,8 +417,8 @@ function sendWhatsAppOrder() {
     }
 
     const sizeObj = store.sizes.find(s => s.size === currentSelectedSize);
-    const hasPromo = sizeObj && sizeObj.promoPrice !== null && sizeObj.promoPrice !== undefined && sizeObj.promoPrice < sizeObj.price;
-    const basePrice = sizeObj ? (hasPromo ? sizeObj.promoPrice : sizeObj.price) : 0;
+    const priceInfo = getEffectiveSizePrice(sizeObj);
+    const basePrice = priceInfo.basePrice;
     
     const extraTotal = extraCount * EXTRA_PRICE;
     const deliveryFee = deliveryLocation ? deliveryLocation.fee : 0;
@@ -328,12 +436,16 @@ function sendWhatsAppOrder() {
         ? `R$ ${deliveryFee.toFixed(2).replace('.', ',')}` 
         : 'Grátis';
 
+    const cupLine = priceInfo.isPromo
+        ? `▫️ ${currentSelectedSize} (R$ ${basePrice.toFixed(2).replace('.', ',')}) 🔥 *Promoção ${priceInfo.promoLabel}*`
+        : `▫️ ${currentSelectedSize} (R$ ${basePrice.toFixed(2).replace('.', ',')})`;
+
     const lines = [
         `🟣 *AL AÇAÍ • NOVO PEDIDO* 🟣`,
         `━━━━━━━━━━━━━━━━━━━━`,
         ``,
         `🥤 *TAMANHO DO COPO*`,
-        `▫️ ${currentSelectedSize} (R$ ${basePrice.toFixed(2).replace('.', ',')})`,
+        cupLine,
         ``,
         `🍧 *ADICIONAIS (${selectedAdicionais.length})*`
     ];

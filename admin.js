@@ -252,6 +252,26 @@ function initDashboard() {
 
     const orderForm = document.getElementById('form-order');
     if (orderForm) {
+        const orderSizeSelect = document.getElementById('order-size');
+        const orderValueInput = document.getElementById('order-value');
+        if (orderSizeSelect && orderValueInput) {
+            orderSizeSelect.addEventListener('change', () => {
+                const data = window.storeAPI.getData();
+                const selectedSize = orderSizeSelect.value;
+                const sObj = data.sizes ? data.sizes.find(s => s.size === selectedSize) : null;
+                if (sObj) {
+                    const isThu = new Date().getDay() === 4;
+                    if (isThu && QUINTA_MALUCA_PRICES[selectedSize] !== undefined) {
+                        orderValueInput.value = QUINTA_MALUCA_PRICES[selectedSize].toFixed(2);
+                    } else if (sObj.promoPrice && sObj.promoPrice < sObj.price) {
+                        orderValueInput.value = sObj.promoPrice.toFixed(2);
+                    } else {
+                        orderValueInput.value = sObj.price.toFixed(2);
+                    }
+                }
+            });
+        }
+
         orderForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const value = parseFloat(document.getElementById('order-value').value);
@@ -642,25 +662,42 @@ function initPriceForm() {
     });
 }
 
+const QUINTA_MALUCA_PRICES = {
+    '300 ml': 12,
+    '400 ml': 15,
+    '500 ml': 18,
+    '770 ml': 25
+};
+
 function renderPriceTable(sizes) {
     const tbody = document.getElementById('table-prices-body');
     if (!tbody) return;
-    tbody.innerHTML = sizes.map(s => `
-        <tr>
-            <td>
-                <img src="${s.photo || 'acai.jpg'}" style="width:32px; height:32px; object-fit:contain; border-radius:4px; margin-right:8px; vertical-align:middle; background:rgba(255,255,255,0.02); border:1px solid var(--border-subtle);">
-                <strong>${s.size}</strong> ${s.badge ? `<span class="badge-pill">${s.badge}</span>` : ''}
-            </td>
-            <td>R$ ${s.price.toFixed(2)}</td>
-            <td>${s.promoPrice ? `R$ ${s.promoPrice.toFixed(2)}` : '-'}</td>
-            <td>
-                <div class="action-btns">
-                    <button class="btn btn-sm btn-edit" onclick="editPrice('${s.id}')">Editar</button>
-                    <button class="btn btn-sm btn-danger" onclick="deletePrice('${s.id}')">Excluir</button>
-                </div>
-            </td>
-        </tr>
-    `).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhum preço cadastrado</td></tr>';
+    tbody.innerHTML = sizes.map(s => {
+        const qmPrice = QUINTA_MALUCA_PRICES[s.size];
+        let promoText = '-';
+        if (s.promoPrice) {
+            promoText = `R$ ${s.promoPrice.toFixed(2)}`;
+        } else if (qmPrice !== undefined) {
+            promoText = `<span style="color: var(--lime); font-weight:700;">R$ ${qmPrice.toFixed(2)}</span> <small style="color:var(--cream-muted)">(Quintas)</small>`;
+        }
+
+        return `
+            <tr>
+                <td>
+                    <img src="${s.photo || 'acai.jpg'}" style="width:32px; height:32px; object-fit:contain; border-radius:4px; margin-right:8px; vertical-align:middle; background:rgba(255,255,255,0.02); border:1px solid var(--border-subtle);">
+                    <strong>${s.size}</strong> ${s.badge ? `<span class="badge-pill">${s.badge}</span>` : ''}
+                </td>
+                <td>R$ ${s.price.toFixed(2)}</td>
+                <td>${promoText}</td>
+                <td>
+                    <div class="action-btns">
+                        <button class="btn btn-sm btn-edit" onclick="editPrice('${s.id}')">Editar</button>
+                        <button class="btn btn-sm btn-danger" onclick="deletePrice('${s.id}')">Excluir</button>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }).join('') || '<tr><td colspan="4" style="text-align:center;">Nenhum preço cadastrado</td></tr>';
 }
 
 window.editPrice = function(id) {
