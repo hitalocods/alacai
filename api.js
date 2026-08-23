@@ -3,7 +3,7 @@
  * Gerencia persistência local (localStorage) e sincronização com a API REST
  */
 
-const STORAGE_KEY = 'al_acai_store_v3';
+const STORAGE_KEY = 'al_acai_store_v5';
 
 const DEFAULT_DATA = {
     sizes: [
@@ -65,21 +65,21 @@ const DEFAULT_DATA = {
         ],
         frutas: [
             { id: "fru-1", name: "Morango", color: "#FF6F86", icon: "🍓", image: "img/fruta-morango.jpg" },
-            { id: "fru-2", name: "Cereja", color: "#C4133C", icon: "🍒", image: "https://images.unsplash.com/photo-1528821128474-27f963b062bf?auto=format&fit=crop&w=150&h=150&q=80" },
-            { id: "fru-3", name: "Uva", color: "#6B3FA0", icon: "🍇", image: "https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "fru-2", name: "Cereja", color: "#C4133C", icon: "🍒", image: "img/cereja.jpg" },
+            { id: "fru-3", name: "Uva", color: "#6B3FA0", icon: "🍇", image: "img/uva.jpg" },
             { id: "fru-4", name: "Kiwi", color: "#8FBF3F", icon: "🥝", image: "img/fruta-kiwi.jpg" },
-            { id: "fru-5", name: "Banana", color: "#F2B705", icon: "🍌", image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=150&h=150&q=80" }
+            { id: "fru-5", name: "Banana", color: "#F2B705", icon: "🍌", image: "img/banana.jpg" }
         ],
         completamentos: [
-            { id: "comp-1", name: "M&M", color: "#FF6F86", icon: "🍬", image: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?auto=format&fit=crop&w=150&h=150&q=80" },
-            { id: "comp-2", name: "Jujuba", color: "#F2B705", icon: "🍬", image: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "comp-1", name: "M&M", color: "#FF6F86", icon: "🍬", image: "img/mm.jpg" },
+            { id: "comp-2", name: "Jujuba", color: "#F2B705", icon: "🍬", image: "img/jujuba.jpg" },
             { id: "comp-3", name: "Nutella", color: "#6B3B1F", icon: "🍫", isNew: true, image: "img/Nutella.jpg" },
             { id: "comp-4", name: "Paçoca", color: "#C68A4E", icon: "🥥", image: "img/pacoca.jpg" },
             { id: "comp-5", name: "Granulado", color: "#3A2318", icon: "✨", image: "img/granulado.jpg" },
             { id: "comp-6", name: "Amendoim", color: "#C9986B", icon: "🥜", image: "img/amendoim.jpg" },
             { id: "comp-7", name: "Leite em pó", color: "#FBF2E4", icon: "🥛", image: "img/leite-em-po.jpg" },
             { id: "comp-8", name: "Ovomaltine", color: "#8A5A2B", icon: "🍫", image: "img/ovomaltine.jpg" },
-            { id: "comp-9", name: "Farinha láctea", color: "#EDEAE0", icon: "🥣", image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "comp-9", name: "Farinha láctea", color: "#EDEAE0", icon: "🥣", image: "img/farinha-lactea.jpg" },
             { id: "comp-10", name: "Flocos de arroz", color: "#EDEAE0", icon: "🍚", image: "img/flocos-arroz.jpg" },
             { id: "comp-11", name: "Flocos de chocolate", color: "#4A2A16", icon: "🍫", image: "img/flocos-chocolate.jpg" },
             { id: "comp-12", name: "Gota de chocolate", color: "#2E1810", icon: "🍫", image: "img/gotas-chocolate.jpg" },
@@ -96,6 +96,25 @@ const DEFAULT_DATA = {
         { id: "inv-morango", name: "Morango (Bandejas)", qty: 25, minQty: 5, unit: "bandejas", linkedItem: "fru-1" }
     ]
 };
+
+function mergeToppingsWithDefaults(sourceToppings) {
+    const src = sourceToppings || {};
+    const def = DEFAULT_DATA.toppings || {};
+    const mergeCategory = (catName) => {
+        const defItems = def[catName] || [];
+        const srcItems = src[catName] || [];
+        // Se a fonte não tiver itens ou os itens não tiverem image, usamos default
+        return defItems.map(dItem => {
+            const found = srcItems.find(s => s.id === dItem.id || s.name === dItem.name);
+            return found ? { ...dItem, ...found, image: found.image || dItem.image } : dItem;
+        });
+    };
+    return {
+        coberturas: mergeCategory('coberturas'),
+        frutas: mergeCategory('frutas'),
+        completamentos: mergeCategory('completamentos')
+    };
+}
 
 class StoreAPI {
     constructor() {
@@ -119,7 +138,14 @@ class StoreAPI {
                         needsSave = true;
                     }
                 }
-                const mergedData = { ...DEFAULT_DATA, ...parsed, photos: mergedPhotos, inventory: parsed.inventory || DEFAULT_DATA.inventory };
+                const mergedToppings = mergeToppingsWithDefaults(parsed.toppings);
+                const mergedData = { 
+                    ...DEFAULT_DATA, 
+                    ...parsed, 
+                    photos: mergedPhotos, 
+                    toppings: mergedToppings,
+                    inventory: parsed.inventory || DEFAULT_DATA.inventory 
+                };
                 if (needsSave) {
                     try {
                         localStorage.setItem(STORAGE_KEY, JSON.stringify(mergedData));
@@ -156,7 +182,14 @@ class StoreAPI {
                     for (const key in DEFAULT_DATA.photos) {
                         mergedPhotos[key] = (remoteData.photos && remoteData.photos[key]) ? remoteData.photos[key] : DEFAULT_DATA.photos[key];
                     }
-                    this.data = { ...DEFAULT_DATA, ...remoteData, photos: mergedPhotos, inventory: remoteData.inventory || DEFAULT_DATA.inventory };
+                    const mergedToppings = mergeToppingsWithDefaults(remoteData.toppings);
+                    this.data = { 
+                        ...DEFAULT_DATA, 
+                        ...remoteData, 
+                        photos: mergedPhotos, 
+                        toppings: mergedToppings,
+                        inventory: remoteData.inventory || DEFAULT_DATA.inventory 
+                    };
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(this.data));
                     this.notify();
                 }

@@ -167,14 +167,14 @@
         "icon": "🍒",
         "name": "Cereja",
         "color": "#C4133C",
-        "image": "https://images.unsplash.com/photo-1528821128474-27f963b062bf?auto=format&fit=crop&w=150&h=150&q=80"
+        "image": "img/cereja.jpg"
       },
       {
         "id": "fru-3",
         "icon": "🍇",
         "name": "Uva",
         "color": "#6B3FA0",
-        "image": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=150&h=150&q=80"
+        "image": "img/uva.jpg"
       },
       {
         "id": "fru-4",
@@ -188,7 +188,7 @@
         "icon": "🍌",
         "name": "Banana",
         "color": "#F2B705",
-        "image": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=150&h=150&q=80"
+        "image": "img/banana.jpg"
       }
     ],
     "coberturas": [
@@ -220,14 +220,14 @@
         "icon": "🍬",
         "name": "M&M",
         "color": "#FF6F86",
-        "image": "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?auto=format&fit=crop&w=150&h=150&q=80"
+        "image": "img/mm.jpg"
       },
       {
         "id": "comp-2",
         "icon": "🍬",
         "name": "Jujuba",
         "color": "#F2B705",
-        "image": "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=150&h=150&q=80"
+        "image": "img/jujuba.jpg"
       },
       {
         "id": "comp-3",
@@ -277,7 +277,7 @@
         "icon": "🥣",
         "name": "Farinha láctea",
         "color": "#EDEAE0",
-        "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=150&h=150&q=80"
+        "image": "img/farinha-lactea.jpg"
       },
       {
         "id": "comp-10",

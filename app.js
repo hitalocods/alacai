@@ -320,39 +320,106 @@ function updateOrderSummary() {
     
     const finalTotal = basePrice + extraTotal + deliveryFee;
 
-    // Summary List
+    // Summary List (Carrinho Visual)
     const summaryList = document.getElementById('summary-list');
     if (summaryList) {
         summaryList.innerHTML = '';
+        
+        const allToppingsList = [
+            ...(store.toppings?.coberturas || []),
+            ...(store.toppings?.frutas || []),
+            ...(store.toppings?.completamentos || [])
+        ];
+
+        // 1. Item do Copo de Açaí
         if (sizeObj) {
-            const li = document.createElement('li');
+            const liCup = document.createElement('li');
+            liCup.className = 'summary-cup-row';
+            const cupPhoto = sizeObj.photo || 'acai.jpg';
+            
+            let priceContent = `<span>R$ ${basePrice.toFixed(2).replace('.', ',')}</span>`;
             if (priceInfo.isPromo) {
-                li.innerHTML = `
-                    <span>Açaí ${sizeObj.size} <small class="summary-promo-badge">(${priceInfo.promoLabel})</small></span>
-                    <span><s class="summary-old-price">R$ ${priceInfo.originalPrice.toFixed(2).replace('.', ',')}</s> <strong>R$ ${priceInfo.basePrice.toFixed(2).replace('.', ',')}</strong></span>
-                `;
-            } else {
-                li.innerHTML = `<span>Açaí ${sizeObj.size}</span><span>R$ ${basePrice.toFixed(2).replace('.', ',')}</span>`;
+                priceContent = `<span><s class="summary-old-price">R$ ${priceInfo.originalPrice.toFixed(2).replace('.', ',')}</s> <strong style="color: var(--lime);">R$ ${priceInfo.basePrice.toFixed(2).replace('.', ',')}</strong></span>`;
             }
-            summaryList.appendChild(li);
+
+            liCup.innerHTML = `
+                <div class="summary-cup-left">
+                    <img src="${cupPhoto}" alt="Açaí ${sizeObj.size}" class="summary-cup-thumb">
+                    <div>
+                        <div class="summary-cup-title">Açaí ${sizeObj.size}</div>
+                        ${priceInfo.isPromo ? `<span class="summary-promo-badge">${priceInfo.promoLabel}</span>` : ''}
+                    </div>
+                </div>
+                ${priceContent}
+            `;
+            summaryList.appendChild(liCup);
         }
+
+        // 2. Lista de Adicionais com Fotos
         if (selectedAdicionais.length > 0) {
-            const li = document.createElement('li');
-            const itemsStr = selectedAdicionais.map(a => a.value).join(', ');
-            li.innerHTML = `<span style="font-size: 13px; color: var(--cream-muted); display: block; max-width: 220px; word-wrap: break-word; text-align: left;">Adicionais: ${itemsStr}</span>`;
-            summaryList.appendChild(li);
+            const liToppings = document.createElement('li');
+            liToppings.className = 'summary-toppings-box';
+
+            const chipsHtml = selectedAdicionais.map((inputEl, idx) => {
+                const name = inputEl.value;
+                const topObj = allToppingsList.find(t => t.name === name);
+                const isExtra = idx >= FREE_LIMIT;
+                const imgSrc = topObj?.image || '';
+                const icon = topObj?.icon || '✨';
+
+                let imgHtml = '';
+                if (imgSrc) {
+                    imgHtml = `<img src="${imgSrc}" class="summary-chip-img" alt="${name}" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+                               <span class="summary-chip-fallback" style="display:none;">${icon}</span>`;
+                } else {
+                    imgHtml = `<span class="summary-chip-fallback">${icon}</span>`;
+                }
+
+                return `
+                    <div class="summary-topping-chip ${isExtra ? 'chip-extra' : 'chip-free'}">
+                        ${imgHtml}
+                        <span class="summary-chip-name">${name}</span>
+                        <span class="summary-chip-tag">${isExtra ? '+R$ 1,00' : 'Grátis'}</span>
+                        <button type="button" class="summary-chip-del" onclick="removeToppingByName('${name.replace(/'/g, "\\'")}')" title="Remover adicional">&times;</button>
+                    </div>
+                `;
+            }).join('');
+
+            liToppings.innerHTML = `
+                <div class="summary-toppings-header">
+                    <span>Adicionais Selecionados (${totalSelected}):</span>
+                </div>
+                <div class="summary-chips-grid">
+                    ${chipsHtml}
+                </div>
+            `;
+            summaryList.appendChild(liToppings);
         }
+
+        // 3. Extras caso ultrapasse o limite
         if (extraCount > 0) {
             const li = document.createElement('li');
-            li.innerHTML = `<span>Extras (${extraCount})</span><span>+R$ ${extraTotal.toFixed(2).replace('.', ',')}</span>`;
+            li.className = 'summary-extra-row';
+            li.innerHTML = `<span>Adicionais Extras (${extraCount})</span><span style="color: var(--gold); font-weight: 800;">+R$ ${extraTotal.toFixed(2).replace('.', ',')}</span>`;
             summaryList.appendChild(li);
         }
+
+        // 4. Taxa de Entrega
         if (deliveryLocation) {
             const li = document.createElement('li');
+            li.className = 'summary-delivery-row';
             li.innerHTML = `<span>Entrega (${deliveryLocation.name})</span><span>R$ ${deliveryFee.toFixed(2).replace('.', ',')}</span>`;
             summaryList.appendChild(li);
         }
     }
+
+    window.removeToppingByName = function(toppingName) {
+        const checkbox = Array.from(document.querySelectorAll('.adicional:checked')).find(el => el.value === toppingName);
+        if (checkbox) {
+            checkbox.checked = false;
+            updateOrderSummary();
+        }
+    };
 
     // Total Price Update
     const totalPriceEl = document.getElementById('total-price');
