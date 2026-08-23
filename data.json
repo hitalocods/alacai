@@ -159,31 +159,36 @@
         "id": "fru-1",
         "icon": "🍓",
         "name": "Morango",
-        "color": "#FF6F86"
+        "color": "#FF6F86",
+        "image": "img/fruta-morango.jpg"
       },
       {
         "id": "fru-2",
         "icon": "🍒",
         "name": "Cereja",
-        "color": "#C4133C"
+        "color": "#C4133C",
+        "image": "https://images.unsplash.com/photo-1528821128474-27f963b062bf?auto=format&fit=crop&w=150&h=150&q=80"
       },
       {
         "id": "fru-3",
         "icon": "🍇",
         "name": "Uva",
-        "color": "#6B3FA0"
+        "color": "#6B3FA0",
+        "image": "https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=150&h=150&q=80"
       },
       {
         "id": "fru-4",
         "icon": "🥝",
         "name": "Kiwi",
-        "color": "#8FBF3F"
+        "color": "#8FBF3F",
+        "image": "img/fruta-kiwi.jpg"
       },
       {
         "id": "fru-5",
         "icon": "🍌",
         "name": "Banana",
-        "color": "#F2B705"
+        "color": "#F2B705",
+        "image": "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=150&h=150&q=80"
       }
     ],
     "coberturas": [
@@ -191,19 +196,22 @@
         "id": "cob-1",
         "icon": "🥛",
         "name": "Leite condensado",
-        "color": "#FBF2E4"
+        "color": "#FBF2E4",
+        "image": "img/leite-condensado.jpg"
       },
       {
         "id": "cob-2",
         "icon": "🍫",
         "name": "Chocolate",
-        "color": "#6B3B1F"
+        "color": "#6B3B1F",
+        "image": "img/cobertura-chocolate.jpg"
       },
       {
         "id": "cob-3",
         "icon": "🍓",
         "name": "Morango (cobertura)",
-        "color": "#FF6F86"
+        "color": "#FF6F86",
+        "image": "img/cobertura-morango.jpg"
       }
     ],
     "completamentos": [
@@ -211,81 +219,94 @@
         "id": "comp-1",
         "icon": "🍬",
         "name": "M&M",
-        "color": "#FF6F86"
+        "color": "#FF6F86",
+        "image": "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?auto=format&fit=crop&w=150&h=150&q=80"
       },
       {
         "id": "comp-2",
         "icon": "🍬",
         "name": "Jujuba",
-        "color": "#F2B705"
+        "color": "#F2B705",
+        "image": "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=150&h=150&q=80"
       },
       {
         "id": "comp-3",
         "icon": "🍫",
         "name": "Nutella",
         "color": "#6B3B1F",
-        "isNew": true
+        "isNew": true,
+        "image": "img/Nutella.jpg"
       },
       {
         "id": "comp-4",
         "icon": "🥥",
         "name": "Paçoca",
-        "color": "#C68A4E"
+        "color": "#C68A4E",
+        "image": "img/pacoca.jpg"
       },
       {
         "id": "comp-5",
         "icon": "✨",
         "name": "Granulado",
-        "color": "#3A2318"
+        "color": "#3A2318",
+        "image": "img/granulado.jpg"
       },
       {
         "id": "comp-6",
         "icon": "🥜",
         "name": "Amendoim",
-        "color": "#C9986B"
+        "color": "#C9986B",
+        "image": "img/amendoim.jpg"
       },
       {
         "id": "comp-7",
         "icon": "🥛",
         "name": "Leite em pó",
-        "color": "#FBF2E4"
+        "color": "#FBF2E4",
+        "image": "img/leite-em-po.jpg"
       },
       {
         "id": "comp-8",
         "icon": "🍫",
         "name": "Ovomaltine",
-        "color": "#8A5A2B"
+        "color": "#8A5A2B",
+        "image": "img/ovomaltine.jpg"
       },
       {
         "id": "comp-9",
         "icon": "🥣",
         "name": "Farinha láctea",
-        "color": "#EDEAE0"
+        "color": "#EDEAE0",
+        "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=150&h=150&q=80"
       },
       {
         "id": "comp-10",
         "icon": "🍚",
         "name": "Flocos de arroz",
-        "color": "#EDEAE0"
+        "color": "#EDEAE0",
+        "image": "img/flocos-arroz.jpg"
       },
       {
         "id": "comp-11",
         "icon": "🍫",
         "name": "Flocos de chocolate",
-        "color": "#4A2A16"
+        "color": "#4A2A16",
+        "image": "img/flocos-chocolate.jpg"
       },
       {
         "id": "comp-12",
         "icon": "🍫",
         "name": "Gota de chocolate",
-        "color": "#2E1810"
+        "color": "#2E1810",
+        "image": "img/gotas-chocolate.jpg"
       },
       {
         "id": "comp-13",
         "icon": "🍦",
         "name": "Tubinho",
         "color": "#FF6F86",
-        "isNew": true
+        "isNew": true,
+        "image": "img/tubinho.jpg"
       }
     ]
   },

@@ -835,17 +835,18 @@ function initToppingsForm() {
         const name = document.getElementById('topping-name').value.trim();
         const color = document.getElementById('topping-color').value;
         const icon = document.getElementById('topping-icon').value.trim();
+        const image = document.getElementById('topping-image') ? document.getElementById('topping-image').value.trim() : '';
         const isNew = document.getElementById('topping-new').checked;
 
-        if (!name || !icon) {
-            alert('Preencha o nome e o emoji do adicional!');
+        if (!name || (!icon && !image)) {
+            alert('Preencha o nome e o emoji ou foto do adicional!');
             return;
         }
 
-        window.storeAPI.saveTopping(category, { name, color, icon, isNew });
+        window.storeAPI.saveTopping(category, { name, color, icon, image, isNew });
         form.reset();
         renderAdminData();
-        showToast('Adicional adicionado!');
+        showToast('Adicional salvo com sucesso!');
     });
 }
 
@@ -866,9 +867,9 @@ function renderFilteredToppings() {
         <table class="crud-table">
             <thead>
                 <tr>
+                    <th>Foto/Ícone</th>
                     <th>Nome</th>
                     <th>Cor</th>
-                    <th>Ícone</th>
                     <th>Ações</th>
                 </tr>
             </thead>
@@ -876,13 +877,15 @@ function renderFilteredToppings() {
                 ${list.map(item => `
                     <tr>
                         <td>
-                            <strong>${item.name}</strong> 
-                            ${item.isNew ? '<span class="status-badge status-ok" style="padding: 2px 6px; font-size: 10px;">Novo</span>' : ''}
+                            ${item.image ? `<img src="${item.image}" style="width:32px; height:32px; border-radius:50%; object-fit:cover; vertical-align:middle; border: 1px solid var(--border-subtle);">` : (item.icon || '✨')}
                         </td>
                         <td>
-                            <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${item.color}; border:1px solid rgba(255,255,255,0.1)"></span>
+                            <strong>${item.name}</strong> 
+                            ${item.isNew ? '<span class="status-badge status-ok" style="padding: 2px 6px; font-size: 10px; margin-left: 6px;">Novo</span>' : ''}
                         </td>
-                        <td>${item.icon || ''}</td>
+                        <td>
+                            <span style="display:inline-block; width:20px; height:20px; border-radius:50%; background:${item.color}; border:1px solid rgba(255,255,255,0.1); vertical-align:middle;"></span>
+                        </td>
                         <td>
                             <div class="action-btns">
                                 <button class="btn btn-sm btn-danger" onclick="deleteToppingItem('${cat}', '${item.id}')">Excluir</button>

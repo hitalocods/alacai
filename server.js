@@ -101,17 +101,36 @@ async function readData() {
             const res = await pool.query("SELECT value FROM store_data WHERE key = 'store_state'");
             if (res.rows.length > 0) {
                 const dbValue = res.rows[0].value;
-                // Mescla as variáveis do banco com as do arquivo local para garantir novas propriedades (como o estoque e novas fotos)
+                // Mescla as variáveis do banco com as do arquivo local para garantir novas propriedades (como o estoque, novas fotos e imagens de adicionais)
                 const mergedPhotos = {};
                 const localPhotos = localData ? localData.photos : {};
                 const dbPhotos = dbValue.photos || {};
                 for (const key in localPhotos) {
                     mergedPhotos[key] = dbPhotos[key] ? dbPhotos[key] : localPhotos[key];
                 }
+
+                const dbToppings = dbValue.toppings || {};
+                const localToppings = localData ? localData.toppings : {};
+                const mergedToppings = {
+                    coberturas: (dbToppings.coberturas || localToppings.coberturas || []).map(t => {
+                        const localMatch = localToppings.coberturas?.find(lt => lt.id === t.id || lt.name === t.name);
+                        return { ...localMatch, ...t, image: t.image || localMatch?.image || '' };
+                    }),
+                    frutas: (dbToppings.frutas || localToppings.frutas || []).map(t => {
+                        const localMatch = localToppings.frutas?.find(lt => lt.id === t.id || lt.name === t.name);
+                        return { ...localMatch, ...t, image: t.image || localMatch?.image || '' };
+                    }),
+                    completamentos: (dbToppings.completamentos || localToppings.completamentos || []).map(t => {
+                        const localMatch = localToppings.completamentos?.find(lt => lt.id === t.id || lt.name === t.name);
+                        return { ...localMatch, ...t, image: t.image || localMatch?.image || '' };
+                    })
+                };
+
                 return { 
                     ...localData, 
                     ...dbValue, 
                     photos: mergedPhotos,
+                    toppings: mergedToppings,
                     inventory: dbValue.inventory || (localData ? localData.inventory : []) 
                 };
             }

@@ -736,12 +736,15 @@ header.scrolled {
 
 .topping-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
 }
 
 .topping {
     position: relative;
+    display: block;
+    cursor: pointer;
+    user-select: none;
 }
 
 .topping input {
@@ -749,48 +752,129 @@ header.scrolled {
     opacity: 0;
     inset: 0;
     cursor: pointer;
+    z-index: 2;
 }
 
+.topping-content,
 .topping span {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding: 12px 16px;
+    gap: 12px;
+    padding: 8px 12px;
     border-radius: var(--radius-lg);
-    background: var(--purple-850);
+    background: rgba(51, 17, 84, 0.7);
     border: 1.5px solid var(--glass-border);
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 700;
     color: var(--cream-muted);
-    transition: all 0.18s ease;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.topping:hover .topping-content,
+.topping:hover span {
+    background: rgba(66, 22, 107, 0.85);
+    border-color: rgba(212, 241, 55, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.topping-thumb-wrap {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+    background: rgba(0, 0, 0, 0.25);
+    border: 2px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.35);
+    transition: all 0.25s ease;
+}
+
+.topping-thumb {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    display: block;
+    transition: transform 0.3s ease;
+}
+
+.topping:hover .topping-thumb {
+    transform: scale(1.12);
 }
 
 .topping .dot {
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     background: currentColor;
-    box-shadow: 0 0 6px rgba(0,0,0,0.3);
+    box-shadow: 0 0 8px rgba(0,0,0,0.4);
 }
 
 .topping .icon {
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1;
 }
 
+.topping-name {
+    flex: 1;
+    line-height: 1.25;
+    color: #fff;
+    font-weight: 700;
+}
+
+.topping-check-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 1.5px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 900;
+    color: transparent;
+    background: rgba(255, 255, 255, 0.04);
+    transition: all 0.25s ease;
+    flex-shrink: 0;
+    margin-left: auto;
+}
+
+.topping input:checked + .topping-content,
 .topping input:checked + span {
     background: rgba(212, 241, 55, 0.12);
     border-color: var(--lime);
     color: var(--cream);
+    box-shadow: 0 4px 16px var(--lime-glow), inset 0 0 12px rgba(212, 241, 55, 0.05);
 }
 
+.topping input:checked + .topping-content .topping-thumb-wrap,
+.topping input:checked + span .topping-thumb-wrap {
+    border-color: var(--lime);
+    box-shadow: 0 0 12px var(--lime-glow);
+}
+
+.topping input:checked + .topping-content .topping-check-icon,
+.topping input:checked + span .topping-check-icon {
+    background: var(--lime);
+    border-color: var(--lime);
+    color: var(--purple-950);
+    transform: scale(1.05);
+}
+
+.topping input:focus-visible + .topping-content,
 .topping input:focus-visible + span {
     outline: 2px solid var(--lime);
     outline-offset: 2px;
 }
 
 .topping .novo {
-    margin-left: auto;
+    margin-left: 4px;
     background: var(--gold);
     color: var(--purple-950);
     font-size: 9.5px;
@@ -1267,35 +1351,45 @@ footer .foot-note {
 }
 
 .copo-img-wrapper {
-    width: 120px;
-    height: 120px;
+    width: 130px;
+    height: 130px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.02);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 50%;
-    border: 1px solid var(--glass-border);
+    border: 2px solid var(--glass-border);
     position: relative;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     flex-shrink: 0;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 .copo-card:hover .copo-img-wrapper {
     border-color: var(--lime);
-    background: rgba(163, 230, 53, 0.05);
+    box-shadow: 0 10px 30px var(--lime-glow);
+    background: rgba(212, 241, 55, 0.06);
 }
 
 .copo-img {
-    max-width: 90%;
-    max-height: 90%;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 50%;
+    display: block;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+svg.copo-img {
+    width: 75%;
+    height: 75%;
     object-fit: contain;
-    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3));
-    transition: transform 0.3s ease;
 }
 
 .copo-card:hover .copo-img {
-    transform: scale(1.08);
+    transform: scale(1.1);
 }
 
 .copo-details {

@@ -59,31 +59,31 @@ const DEFAULT_DATA = {
     expenses: [],
     toppings: {
         coberturas: [
-            { id: "cob-1", name: "Leite condensado", color: "#FBF2E4", icon: "🥛" },
-            { id: "cob-2", name: "Chocolate", color: "#6B3B1F", icon: "🍫" },
-            { id: "cob-3", name: "Morango (cobertura)", color: "#FF6F86", icon: "🍓" }
+            { id: "cob-1", name: "Leite condensado", color: "#FBF2E4", icon: "🥛", image: "img/leite-condensado.jpg" },
+            { id: "cob-2", name: "Chocolate", color: "#6B3B1F", icon: "🍫", image: "img/cobertura-chocolate.jpg" },
+            { id: "cob-3", name: "Morango (cobertura)", color: "#FF6F86", icon: "🍓", image: "img/cobertura-morango.jpg" }
         ],
         frutas: [
-            { id: "fru-1", name: "Morango", color: "#FF6F86", icon: "🍓" },
-            { id: "fru-2", name: "Cereja", color: "#C4133C", icon: "🍒" },
-            { id: "fru-3", name: "Uva", color: "#6B3FA0", icon: "🍇" },
-            { id: "fru-4", name: "Kiwi", color: "#8FBF3F", icon: "🥝" },
-            { id: "fru-5", name: "Banana", color: "#F2B705", icon: "🍌" }
+            { id: "fru-1", name: "Morango", color: "#FF6F86", icon: "🍓", image: "img/fruta-morango.jpg" },
+            { id: "fru-2", name: "Cereja", color: "#C4133C", icon: "🍒", image: "https://images.unsplash.com/photo-1528821128474-27f963b062bf?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "fru-3", name: "Uva", color: "#6B3FA0", icon: "🍇", image: "https://images.unsplash.com/photo-1537640538966-79f369143f8f?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "fru-4", name: "Kiwi", color: "#8FBF3F", icon: "🥝", image: "img/fruta-kiwi.jpg" },
+            { id: "fru-5", name: "Banana", color: "#F2B705", icon: "🍌", image: "https://images.unsplash.com/photo-1571771894821-ce9b6c11b08e?auto=format&fit=crop&w=150&h=150&q=80" }
         ],
         completamentos: [
-            { id: "comp-1", name: "M&M", color: "#FF6F86", icon: "🍬" },
-            { id: "comp-2", name: "Jujuba", color: "#F2B705", icon: "🍬" },
-            { id: "comp-3", name: "Nutella", color: "#6B3B1F", icon: "🍫", isNew: true },
-            { id: "comp-4", name: "Paçoca", color: "#C68A4E", icon: "🥥" },
-            { id: "comp-5", name: "Granulado", color: "#3A2318", icon: "✨" },
-            { id: "comp-6", name: "Amendoim", color: "#C9986B", icon: "🥜" },
-            { id: "comp-7", name: "Leite em pó", color: "#FBF2E4", icon: "🥛" },
-            { id: "comp-8", name: "Ovomaltine", color: "#8A5A2B", icon: "🍫" },
-            { id: "comp-9", name: "Farinha láctea", color: "#EDEAE0", icon: "🥣" },
-            { id: "comp-10", name: "Flocos de arroz", color: "#EDEAE0", icon: "🍚" },
-            { id: "comp-11", name: "Flocos de chocolate", color: "#4A2A16", icon: "🍫" },
-            { id: "comp-12", name: "Gota de chocolate", color: "#2E1810", icon: "🍫" },
-            { id: "comp-13", name: "Tubinho", color: "#FF6F86", icon: "🍦", isNew: true }
+            { id: "comp-1", name: "M&M", color: "#FF6F86", icon: "🍬", image: "https://images.unsplash.com/photo-1581798459219-318e76aecc7b?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "comp-2", name: "Jujuba", color: "#F2B705", icon: "🍬", image: "https://images.unsplash.com/photo-1582058091505-f87a2e55a40f?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "comp-3", name: "Nutella", color: "#6B3B1F", icon: "🍫", isNew: true, image: "img/Nutella.jpg" },
+            { id: "comp-4", name: "Paçoca", color: "#C68A4E", icon: "🥥", image: "img/pacoca.jpg" },
+            { id: "comp-5", name: "Granulado", color: "#3A2318", icon: "✨", image: "img/granulado.jpg" },
+            { id: "comp-6", name: "Amendoim", color: "#C9986B", icon: "🥜", image: "img/amendoim.jpg" },
+            { id: "comp-7", name: "Leite em pó", color: "#FBF2E4", icon: "🥛", image: "img/leite-em-po.jpg" },
+            { id: "comp-8", name: "Ovomaltine", color: "#8A5A2B", icon: "🍫", image: "img/ovomaltine.jpg" },
+            { id: "comp-9", name: "Farinha láctea", color: "#EDEAE0", icon: "🥣", image: "https://images.unsplash.com/photo-1586201375761-83865001e31c?auto=format&fit=crop&w=150&h=150&q=80" },
+            { id: "comp-10", name: "Flocos de arroz", color: "#EDEAE0", icon: "🍚", image: "img/flocos-arroz.jpg" },
+            { id: "comp-11", name: "Flocos de chocolate", color: "#4A2A16", icon: "🍫", image: "img/flocos-chocolate.jpg" },
+            { id: "comp-12", name: "Gota de chocolate", color: "#2E1810", icon: "🍫", image: "img/gotas-chocolate.jpg" },
+            { id: "comp-13", name: "Tubinho", color: "#FF6F86", icon: "🍦", isNew: true, image: "img/tubinho.jpg" }
         ]
     },
     inventory: [

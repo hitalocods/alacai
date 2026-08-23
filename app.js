@@ -250,16 +250,33 @@ function renderToppingCategory(containerId, list) {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    container.innerHTML = list.map(item => `
-        <label class="topping">
-            <input type="checkbox" value="${item.name}" class="adicional">
-            <span>
-                ${item.icon ? `<span class="icon">${item.icon}</span>` : ''}
-                ${item.name}
-                ${item.isNew ? `<span class="novo">Novo</span>` : ''}
-            </span>
-        </label>
-    `).join('');
+    container.innerHTML = list.map(item => {
+        let visualHtml = '';
+        if (item.image) {
+            visualHtml = `
+                <div class="topping-thumb-wrap">
+                    <img src="${item.image}" alt="${item.name}" class="topping-thumb" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <span class="topping-fallback-icon" style="display:none;">${item.icon || '✨'}</span>
+                </div>
+            `;
+        } else if (item.icon) {
+            visualHtml = `<div class="topping-thumb-wrap"><span class="icon">${item.icon}</span></div>`;
+        } else {
+            visualHtml = `<div class="topping-thumb-wrap"><span class="dot" style="background:${item.color || 'var(--lime)'}"></span></div>`;
+        }
+
+        return `
+            <label class="topping">
+                <input type="checkbox" value="${item.name}" class="adicional">
+                <span class="topping-content">
+                    ${visualHtml}
+                    <span class="topping-name">${item.name}</span>
+                    ${item.isNew ? `<span class="novo">Novo</span>` : ''}
+                    <span class="topping-check-icon">✓</span>
+                </span>
+            </label>
+        `;
+    }).join('');
 }
 
 function renderDeliveryOptions(locations) {
