@@ -821,6 +821,16 @@ header.scrolled {
     line-height: 1;
 }
 
+.topping-fallback-icon {
+    font-size: 22px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+}
+
 .topping-name {
     flex: 1;
     line-height: 1.25;
@@ -1804,6 +1814,12 @@ svg.copo-img {
         gap: 16px;
     }
 
+    .hero-img-custom {
+        max-width: 320px;
+        max-height: 280px;
+        margin: 0 auto;
+    }
+
     .modal-container {
         width: 100%;
         height: 100%;
@@ -1831,15 +1847,28 @@ svg.copo-img {
 @media (max-width: 480px) {
     .copos-grid {
         grid-template-columns: 1fr;
+        gap: 14px;
     }
     
     .copo-card {
-        padding: 20px;
+        padding: 16px;
+    }
+
+    .copo-card-top {
+        gap: 14px;
+        margin-bottom: 14px;
     }
     
     .copo-img-wrapper {
-        width: 130px;
-        height: 130px;
+        width: 96px;
+        height: 96px;
+        flex-shrink: 0;
+    }
+
+    .hero-img-custom {
+        max-width: 240px;
+        max-height: 220px;
+        margin: 0 auto;
     }
     
     .modal-header {

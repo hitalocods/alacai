@@ -629,20 +629,24 @@ function initPriceForm() {
         const promoPriceVal = document.getElementById('price-promo-val').value;
         const promoPrice = promoPriceVal ? parseFloat(promoPriceVal) : null;
         const badge = document.getElementById('price-badge').value.trim();
+        const photoInput = document.getElementById('price-photo');
+        let photo = (photoInput && photoInput.value.trim()) || '';
 
         if (!size || isNaN(price)) {
             alert('Preencha o tamanho e o preço corretamente!');
             return;
         }
 
-        // Mantém a foto existente se for edição, ou usa a padrão acai.jpg
-        let photo = 'acai.jpg';
-        if (id) {
-            const data = window.storeAPI.getData();
-            const existing = data.sizes && data.sizes.find(s => s.id === id);
-            if (existing && existing.photo) {
-                photo = existing.photo;
+        // Mantém a foto existente se não foi preenchida nova, ou usa a padrão acai.jpg
+        if (!photo) {
+            if (id) {
+                const data = window.storeAPI.getData();
+                const existing = data.sizes && data.sizes.find(s => s.id === id);
+                if (existing && existing.photo) {
+                    photo = existing.photo;
+                }
             }
+            if (!photo) photo = 'acai.jpg';
         }
 
         window.storeAPI.savePrice({
@@ -710,6 +714,9 @@ window.editPrice = function(id) {
     document.getElementById('price-val').value = sizeObj.price;
     document.getElementById('price-promo-val').value = sizeObj.promoPrice || '';
     document.getElementById('price-badge').value = sizeObj.badge || '';
+    if (document.getElementById('price-photo')) {
+        document.getElementById('price-photo').value = sizeObj.photo || 'acai.jpg';
+    }
     showToast(`Editando ${sizeObj.size}`);
 };
 

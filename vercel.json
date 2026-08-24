@@ -11,7 +11,11 @@
           "*.js",
           "*.json",
           "*.jpg",
-          "*.jpeg"
+          "*.jpeg",
+          "*.png",
+          "*.webp",
+          "img/**",
+          "img/*"
         ]
       }
     }

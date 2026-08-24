@@ -89,6 +89,18 @@ function renderUI(data) {
     renderBuilderOptions(data.toppings);
     renderDeliveryOptions(data.deliveryLocations);
     updateOrderSummary();
+
+    // Dynamic Hero Photo & Logo
+    if (data && data.photos) {
+        const heroImg = document.querySelector('.hero-img-custom');
+        if (heroImg && data.photos.heroCup) {
+            heroImg.src = data.photos.heroCup;
+        }
+        const logoImg = document.querySelector('.logo-img');
+        if (logoImg && data.photos.logo) {
+            logoImg.src = data.photos.logo;
+        }
+    }
 }
 
 function renderQuintaMalucaBanner() {
@@ -121,21 +133,11 @@ function renderCoposGrid(sizes, photos) {
 
     coposGrid.innerHTML = sizes.map(s => {
         const priceInfo = getEffectiveSizePrice(s);
-        const photoUrl = s.photo || '';
+        const photoUrl = s.photo || 'acai.jpg';
         
-        let imgHtml = '';
-        if (photoUrl) {
-            imgHtml = `<img src="${photoUrl}" alt="Açaí ${s.size}" class="copo-img">`;
-        } else {
-            // Elegant SVG representation
-            imgHtml = `
-                <svg viewBox="0 0 100 120" class="copo-img" fill="none" stroke="var(--lime)" stroke-width="2" style="width: 100px; height: 100px;">
-                    <path d="M18 15 L82 15 L72 105 L28 105 Z" fill="#58218B" stroke="var(--lime)" stroke-width="2" />
-                    <ellipse cx="50" cy="15" rx="32" ry="8" fill="#7832B6" stroke="var(--lime)" stroke-width="1.5" />
-                    <ellipse cx="50" cy="13" rx="26" ry="6" fill="#FF3366" />
-                </svg>
-            `;
-        }
+        const imgHtml = `
+            <img src="${photoUrl}" alt="Açaí ${s.size}" class="copo-img" loading="lazy" onerror="this.onerror=null; this.src='acai.jpg';">
+        `;
 
         // Badge determination
         let badgeHtml = '';
